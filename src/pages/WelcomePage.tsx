@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logo from '../assets/Non.png';
 
 const WelcomePage = () => {
     const [username, setUsername] = useState<string | null>(null);
@@ -25,6 +26,10 @@ const WelcomePage = () => {
             alignItems: 'center',
             textAlign: 'center'
         }}>
+            {/* Display the logo */}
+            <div style={{ marginBottom: '20px'}}>
+                <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
+            </div>
             <h1 style={{ 
                 fontSize: '6vw', 
                 margin: '20px 0', 

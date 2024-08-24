@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
@@ -12,7 +12,11 @@ interface Task {
 const TaskSlider = ({ tasks }: { tasks: Task[] }) => {
     const { updateCtsBalance } = useUser();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentTasks, setCurrentTasks] = useState(tasks);
+    const [currentTasks, setCurrentTasks] = useState<Task[]>(tasks);
+
+    useEffect(() => {
+        setCurrentTasks(tasks);
+    }, [tasks]);
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % currentTasks.length);
@@ -23,11 +27,16 @@ const TaskSlider = ({ tasks }: { tasks: Task[] }) => {
     };
 
     const handleCompleteTask = (taskId: number, reward: number) => {
-        setCurrentTasks(currentTasks.filter(task => task.id !== taskId));
+        const updatedTasks = currentTasks.filter(task => task.id !== taskId);
+
+        setCurrentTasks(updatedTasks);
+        setCurrentIndex(currentIndex >= updatedTasks.length ? 0 : currentIndex); // Reset index if out of bounds
+
+        // Update CTS balance
         updateCtsBalance(reward);
-        if (currentIndex >= currentTasks.length - 1) {
-            setCurrentIndex(0);
-        }
+
+        // Save updated tasks to localStorage
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     };
 
     const currentTask = currentTasks[currentIndex];
