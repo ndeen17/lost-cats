@@ -1,61 +1,107 @@
-// src/App.tsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from 'react-router-dom';
+import WelcomePage from './pages/WelcomePage';
 import DashboardPage from './pages/DashboardPage';
 import TasksPage from './pages/TasksPage';
 import InvitePage from './pages/InvitePage';
-import LeaderboardPage from './pages/LeaderboardPage'; // Import LeaderboardPage
+import LeaderboardPage from './pages/LeaderboardPage';
+
+// Import icons from react-icons
+import { FaHome, FaDollarSign, FaUserPlus, FaTrophy } from 'react-icons/fa';
+
+// Custom component to conditionally render the footer
+const Footer = () => {
+    const location = useLocation();
+
+    // Check if the current path is the WelcomePage
+    const isWelcomePage = location.pathname === '/';
+
+    if (isWelcomePage) {
+        return null; // Do not render the footer on the WelcomePage
+    }
+
+    return (
+        <footer style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '10px 0',
+            borderTop: '1px solid #333',
+            backgroundColor: '#000',
+            position: 'fixed',
+            bottom: 0,
+            width: '100%',
+            zIndex: 1000,
+            fontSize: '14px',
+        }}>
+            <NavLink
+                to="/dashboard"
+                style={({ isActive }) => ({
+                    color: isActive ? '#00f' : '#fff',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                    padding: '5px 0',
+                })}
+            >
+                <FaHome style={{ fontSize: '24px', marginBottom: '5px' }} />
+                <span style={{ display: 'block' }}>Home</span>
+            </NavLink>
+            <NavLink
+                to="/tasks"
+                style={({ isActive }) => ({
+                    color: isActive ? '#00f' : '#fff',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                    padding: '5px 0',
+                })}
+            >
+                <FaDollarSign style={{ fontSize: '24px', marginBottom: '5px' }} />
+                <span style={{ display: 'block' }}>Earn</span>
+            </NavLink>
+            <NavLink
+                to="/invite"
+                style={({ isActive }) => ({
+                    color: isActive ? '#00f' : '#fff',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                    padding: '5px 0',
+                })}
+            >
+                <FaUserPlus style={{ fontSize: '24px', marginBottom: '5px' }} />
+                <span style={{ display: 'block' }}>Invite</span>
+            </NavLink>
+            <NavLink
+                to="/leaderboard"
+                style={({ isActive }) => ({
+                    color: isActive ? '#00f' : '#fff',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: 1,
+                    padding: '5px 0',
+                })}
+            >
+                <FaTrophy style={{ fontSize: '24px', marginBottom: '5px' }} />
+                <span style={{ display: 'block' }}>Leaderboard</span>
+            </NavLink>
+        </footer>
+    );
+};
 
 const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<LoginPage />} />
+                <Route path="/" element={<WelcomePage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/invite" element={<InvitePage />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} /> {/* Add LeaderboardPage Route */}
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
             </Routes>
 
-            {/* Footer Navigation */}
-            <footer style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                padding: '10px',
-                borderTop: '1px solid #000',
-                backgroundColor: '#000',
-                position: 'fixed',
-                bottom: 0,
-                width: '100%',
-                zIndex: 1000,
-            }}>
-                <NavLink to="/dashboard" style={{ color: '#fff', textDecoration: 'none' }} activeStyle={{ color: '#00f' }}>
-                    <span style={{ display: 'block', textAlign: 'center' }}>
-                        Home
-                        <i className="fas fa-home" style={{ marginLeft: '5px' }}></i>
-                    </span>
-                </NavLink>
-                <NavLink to="/tasks" style={{ color: '#fff', textDecoration: 'none' }} activeStyle={{ color: '#00f' }}>
-                    <span style={{ display: 'block', textAlign: 'center' }}>
-                        Earn
-                        <i className="fas fa-dollar-sign" style={{ marginLeft: '5px' }}></i>
-                    </span>
-                </NavLink>
-                <NavLink to="/invite" style={{ color: '#fff', textDecoration: 'none' }} activeStyle={{ color: '#00f' }}>
-                    <span style={{ display: 'block', textAlign: 'center' }}>
-                        Invite Friends
-                        <i className="fas fa-user-plus" style={{ marginLeft: '5px' }}></i>
-                    </span>
-                </NavLink>
-                <NavLink to="/leaderboard" style={{ color: '#fff', textDecoration: 'none' }} activeStyle={{ color: '#00f' }}>
-                    <span style={{ display: 'block', textAlign: 'center' }}>
-                        Leaderboard
-                        <i className="fas fa-trophy" style={{ marginLeft: '5px' }}></i>
-                    </span>
-                </NavLink>
-            </footer>
+            <Footer /> {/* Render Footer component */}
         </Router>
     );
 };

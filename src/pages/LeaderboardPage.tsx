@@ -39,6 +39,7 @@ const LeaderboardPage = () => {
 
             {/* Table displaying the leaderboard */}
             <div style={{
+                color: 'black',
                 borderCollapse: 'collapse',
                 width: '100%',
                 marginTop: '20px',
