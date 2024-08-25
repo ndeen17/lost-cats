@@ -1,5 +1,5 @@
 // src/context/UserContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode } from 'react';
 
 // Create UserContext with default values
 const UserContext = createContext<any>(null);
