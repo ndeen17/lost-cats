@@ -1,5 +1,4 @@
 // src/pages/LeaderboardPage.tsx
-import React from 'react';
 import { useUser } from '../context/UserContext';
 
 const LeaderboardPage = () => {
