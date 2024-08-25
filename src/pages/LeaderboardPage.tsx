@@ -1,19 +1,25 @@
 // src/pages/LeaderboardPage.tsx
 import { useUser } from '../context/UserContext';
 
+// Define the User type
+interface User {
+    userName: string;
+    score: number;
+}
+
 const LeaderboardPage = () => {
     const { userName } = useUser();
 
     // Retrieve leaderboard data from localStorage
-    const leaderboardData = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    const leaderboardData: User[] = JSON.parse(localStorage.getItem('leaderboard') || '[]');
 
     // Add the current user to the leaderboard data if not already present
-    const updatedLeaderboardData = leaderboardData.some((user: any) => user.userName === userName)
+    const updatedLeaderboardData: User[] = leaderboardData.some((user) => user.userName === userName)
         ? leaderboardData
         : [...leaderboardData, { userName, score: 0 }]; // Default score if not found
 
     // Sort leaderboard data by score (highest to lowest)
-    const sortedLeaderboard = updatedLeaderboardData.sort((a: any, b: any) => b.score - a.score);
+    const sortedLeaderboard = updatedLeaderboardData.sort((a, b) => b.score - a.score);
 
     // Find the current user's rank and score
     const currentUserRank = sortedLeaderboard.findIndex(user => user.userName === userName) + 1;
@@ -58,7 +64,7 @@ const LeaderboardPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedLeaderboard.map((user: any, index: number) => (
+                        {sortedLeaderboard.map((user, index) => (
                             <tr key={index} style={{
                                 backgroundColor: index % 2 === 0 ? '#fff' : '#f9f9f9',
                                 borderBottom: '1px solid #ddd',

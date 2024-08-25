@@ -91,12 +91,18 @@ const Footer = () => {
 };
 
 const App = () => {
+
+    // Define the onTaskComplete handler
+    const handleTaskComplete = (taskId: number) => {
+        console.log(`Task ${taskId} completed`);
+    };
+
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/tasks" element={<TasksPage />} />
+                 <Route path="/tasks" element={<TasksPage onTaskComplete={handleTaskComplete} />} />
                 <Route path="/invite" element={<InvitePage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
             </Routes>
