@@ -1,5 +1,5 @@
 // src/pages/InvitePage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const InvitePage = () => {
     const [inviteLink, setInviteLink] = useState('');

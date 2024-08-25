@@ -1,6 +1,6 @@
 
 // src/pages/DashboardPage.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import TaskSlider from '../components/TaskSlider';
 import logo from '../assets/logo.png'; // Import the logo
