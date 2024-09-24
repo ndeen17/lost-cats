@@ -29,6 +29,9 @@ const TaskSlider = ({ tasks, handleCompleteTask }: { tasks: Task[], handleComple
   const handleComplete = () => {
     const task = currentTasks[currentIndex];
     handleCompleteTask(task.id, task.reward);
+    
+    // Update CTS balance after completing the task
+    updateCtsBalance(task.reward);
   };
 
   const currentTask = currentTasks[currentIndex];
