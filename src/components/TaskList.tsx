@@ -19,36 +19,33 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
         // Additional tasks can be added here
     ]);
 
-    // Fetch tasks from the backend API to ensure persistence
-    const fetchTasks = async () => {
+    const [completedTasks, setCompletedTasks] = useState<number[]>([]); // Store completed task IDs
+
+    // Fetch completed tasks from the backend API
+    const fetchCompletedTasks = async () => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/tasks`); // Updated to use environment variable for API URL
-            setTasks(res.data); // Set tasks state with data from the backend
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/tasks/completed/${userName}`);
+            setCompletedTasks(res.data.completedTasks || []); // Set completed tasks state with data from backend
         } catch (error) {
-            console.error("Error fetching tasks:", error);
+            console.error("Error fetching completed tasks:", error);
         }
     };
 
     useEffect(() => {
-        fetchTasks(); // Fetch tasks on component mount
+        fetchCompletedTasks(); // Fetch completed tasks on component mount
     }, []);
 
     // Handle task completion
     const handleCompleteTask = async (taskId: number, reward: number, url?: string) => {
-        // Ask for confirmation before marking the task as complete
         const isConfirmed = window.confirm("Are you sure you completed the task?");
-        if (!isConfirmed) {
-            return; // If not confirmed, do nothing
-        }
+        if (!isConfirmed) return;
 
-        // Ask if the user clicked the task URL (if it exists)
         const taskClicked = url ? window.confirm("Did you click the link to complete the task?") : true;
         if (!taskClicked) {
-            alert("You need to click the link to receive CTS."); // Alert the user to click the link
-            return; // Exit if the link wasn't clicked
+            alert("You need to click the link to receive CTS.");
+            return;
         }
 
-        // If there is a URL, open it in a new tab
         if (url) {
             window.open(url, "_blank");
         }
@@ -57,9 +54,8 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
             // Notify the backend about task completion
             await axios.post(`${process.env.REACT_APP_API_URL}/tasks/complete/${taskId}`, { userName });
 
-            // Filter out the completed task and update the state
-            const updatedTasks = tasks.filter(task => task.id !== taskId);
-            setTasks(updatedTasks); // Update tasks list
+            // Update completed tasks list
+            setCompletedTasks([...completedTasks, taskId]);
 
             // Update the CTS balance for the user
             updateCtsBalance(reward);
@@ -75,44 +71,46 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
         <div style={{ marginTop: '20px' }}>
             {/* Display the tasks if available */}
             {tasks.length > 0 ? (
-                tasks.map(task => (
-                    <div key={task.id} style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '15px 20px',
-                        margin: '10px 0',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        backgroundColor: '#000',
-                    }}>
-                        <span style={{ flex: 1 }}>
-                            {task.url ? (
-                                <a href={task.url} target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
-                                    {task.task}
-                                </a>
-                            ) : (
-                                <span style={{ color: '#fff' }}>{task.task}</span>
-                            )}
-                        </span>
-                        <button
-                            onClick={() => handleCompleteTask(task.id, task.reward, task.url)}
-                            style={{
-                                padding: '8px 15px',
-                                borderRadius: '5px',
-                                backgroundColor: '#000',
-                                color: '#fff',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                            }}
-                        >
-                            Complete +{task.reward} CTS
-                        </button>
-                    </div>
-                ))
+                tasks
+                    .filter(task => !completedTasks.includes(task.id)) // Exclude completed tasks
+                    .map(task => (
+                        <div key={task.id} style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '15px 20px',
+                            margin: '10px 0',
+                            borderRadius: '10px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                            backgroundColor: '#000',
+                        }}>
+                            <span style={{ flex: 1 }}>
+                                {task.url ? (
+                                    <a href={task.url} target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+                                        {task.task}
+                                    </a>
+                                ) : (
+                                    <span style={{ color: '#fff' }}>{task.task}</span>
+                                )}
+                            </span>
+                            <button
+                                onClick={() => handleCompleteTask(task.id, task.reward, task.url)}
+                                style={{
+                                    padding: '8px 15px',
+                                    borderRadius: '5px',
+                                    backgroundColor: '#000',
+                                    color: '#fff',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                }}
+                            >
+                                Complete +{task.reward} CTS
+                            </button>
+                        </div>
+                    ))
             ) : (
-                <p>No tasks available</p> // Display this if no tasks are available
+                <p>No tasks available</p> 
             )}
         </div>
     );
