@@ -22,7 +22,7 @@ const LeaderboardPage = () => {
             console.log('API URL:', import.meta.env.VITE_API_URL);
             
             // Use environment variable for the API URL
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaderboard`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`);
             
             if (res.data && Array.isArray(res.data)) {
                 setLeaderboardData(res.data);

@@ -43,7 +43,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
 
         try {
             // Notify the backend about task completion
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/tasks/complete/${taskId}`, { userName });
+            await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${taskId}`, { userName });
 
             // Update completed tasks list
             setCompletedTasks([...completedTasks, taskId]);

@@ -21,7 +21,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const fetchUser = async (name: string) => {
         try {
             console.log(`Fetching data for user: ${name}`);
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${name}`); // Fixed URL formatting
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${name}`); // Fixed URL formatting
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
         } catch (error) {
@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         try {
             const newBalance = ctsBalance + amount;
             console.log(`Updating CTS balance for ${userName} to ${newBalance}`);
-            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${userName}`, { ctsBalance: newBalance });
+            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/users/${userName}`, { ctsBalance: newBalance });
             setCtsBalance(res.data.ctsBalance);
         } catch (error) {
             console.error("Error updating CTS balance:", error);
