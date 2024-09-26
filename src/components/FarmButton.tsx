@@ -23,7 +23,7 @@ const FarmButton = () => {
 
         setIsFarming(true);
         try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/api/farm`, { userName });
+            await axios.post(`${process.env.REACT_APP_API_URL}/farm`, { userName });
             setTimer(9 * 60 * 60 * 1000); // 9 hours in milliseconds
             setTimeout(() => {
                 setCanClaim(true);
