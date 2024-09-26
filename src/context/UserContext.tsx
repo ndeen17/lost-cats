@@ -21,11 +21,28 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const fetchUser = async (name: string) => {
         try {
             console.log(`Fetching data for user: ${name}`);
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${name}`); // Fixed URL formatting
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${name}`);
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
+        } catch (error: any) {
+            if (error.response && error.response.status === 404) {
+                console.log("User not found, creating new user.");
+                await createUser(name); // Create user if not found
+            } else {
+                console.error("Error fetching user:", error);
+            }
+        }
+    };
+
+    // Create a new user in the backend
+    const createUser = async (name: string) => {
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/users`, { userName: name });
+            setUserName(res.data.userName);
+            setCtsBalance(res.data.ctsBalance);
+            console.log(`User ${name} created successfully.`);
         } catch (error) {
-            console.error("Error fetching user:", error);
+            console.error("Error creating user:", error);
         }
     };
 
@@ -52,7 +69,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (storedUserName) {
             fetchUser(storedUserName);
         } else {
-            console.log("No user found in localStorage.");
+            // If no user found, treat them as a guest and create a guest user
+            const guestUserName = 'Guest_' + Math.floor(Math.random() * 1000); // Generate a random guest username
+            console.log("No user found, creating guest user:", guestUserName);
+            createUser(guestUserName);
         }
     }, []);
 

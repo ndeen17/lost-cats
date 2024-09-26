@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
+import { useUser } from '../context/UserContext'; // Import UserContext hook
 import logo from '../assets/Non.png';
 
 const WelcomePage = () => {
-    const [username, setUsername] = useState<string | null>(null);
+    const [localUsername, setLocalUsername] = useState<string | null>(null);
+    const { setUserName } = useUser(); // Get setUserName from context to store in global state
 
     useEffect(() => {
         // Optional chaining to ensure compatibility if not opened in Telegram
         const tg = window.Telegram?.WebApp;
+        let username = 'Guest'; // Default username
         if (tg?.initDataUnsafe?.user) {
-            setUsername(tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
-        } else {
-            setUsername('Guest');
+            username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
         }
-    }, []);
+
+        setLocalUsername(username); // Set the local state for immediate display
+        setUserName(username); // Save the username in the context for global use
+        localStorage.setItem('userName', username); // Optionally store in localStorage
+    }, [setUserName]);
 
     return (
         <div style={{ 
@@ -35,7 +40,7 @@ const WelcomePage = () => {
                 margin: '20px 0', 
                 lineHeight: '1.2' 
             }}>
-                Welcome, {username}!
+                Welcome, {localUsername}!
             </h1>
             <p style={{ 
                 fontSize: '4vw', 
