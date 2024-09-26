@@ -18,8 +18,11 @@ const LeaderboardPage = () => {
     // Fetch leaderboard data from the backend
     const fetchLeaderboard = async () => {
         try {
+            // Log the API URL to ensure it's correctly set
+            console.log('API URL:', import.meta.env.VITE_API_URL);
+            
             // Use environment variable for the API URL
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/leaderboard`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaderboard`);
             
             if (res.data && Array.isArray(res.data)) {
                 setLeaderboardData(res.data);

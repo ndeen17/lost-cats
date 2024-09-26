@@ -12,10 +12,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [userName, setUserName] = useState<string | null>(null);
     const [ctsBalance, setCtsBalance] = useState<number>(0);
 
-    // Fetch user from the backend
+    // Log API URL to ensure it's set correctly
+    useEffect(() => {
+        console.log('API URL:', import.meta.env.VITE_API_URL);
+    }, []);
+
+    // Fetch user data from the backend
     const fetchUser = async (name: string) => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/users/${name}`); // Fetch user details by username
+            console.log(`Fetching data for user: ${name}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${name}`); // Fixed URL formatting
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
         } catch (error) {
@@ -25,9 +31,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     // Update CTS balance in the backend
     const updateCtsBalance = async (amount: number) => {
+        if (!userName) {
+            console.error("Cannot update balance: userName is null");
+            return;
+        }
+
         try {
             const newBalance = ctsBalance + amount;
-            const res = await axios.patch(`${process.env.REACT_APP_API_URL}/users/${userName}`, { ctsBalance: newBalance }); // PATCH request
+            console.log(`Updating CTS balance for ${userName} to ${newBalance}`);
+            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${userName}`, { ctsBalance: newBalance });
             setCtsBalance(res.data.ctsBalance);
         } catch (error) {
             console.error("Error updating CTS balance:", error);
@@ -39,6 +51,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const storedUserName = localStorage.getItem('userName');
         if (storedUserName) {
             fetchUser(storedUserName);
+        } else {
+            console.log("No user found in localStorage.");
         }
     }, []);
 

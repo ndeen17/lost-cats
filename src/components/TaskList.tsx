@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Add useEffect to the import
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
@@ -21,6 +21,11 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
 
     const [completedTasks, setCompletedTasks] = useState<number[]>([]); // Store completed task IDs
 
+    // Add logging to confirm the API URL
+    useEffect(() => {
+        console.log('API URL:', import.meta.env.VITE_API_URL);
+    }, []);
+
     // Handle task completion
     const handleCompleteTask = async (taskId: number, reward: number, url?: string) => {
         const isConfirmed = window.confirm("Are you sure you completed the task?");
@@ -38,7 +43,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
 
         try {
             // Notify the backend about task completion
-            await axios.post(`${process.env.REACT_APP_API_URL}/tasks/complete/${taskId}`, { userName });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/tasks/complete/${taskId}`, { userName });
 
             // Update completed tasks list
             setCompletedTasks([...completedTasks, taskId]);
