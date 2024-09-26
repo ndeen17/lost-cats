@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
@@ -13,27 +13,13 @@ interface Task {
 const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void }) => {
     const { updateCtsBalance, userName } = useUser(); // Retrieve CTS balance and userName from context
 
-    const [tasks, setTasks] = useState<Task[]>([
+    const tasks: Task[] = [
         { id: 1, task: 'Join our Telegram group', reward: 500, url: 'https://telegram.org' },
         { id: 2, task: 'Follow us on Twitter', reward: 600, url: 'https://twitter.com' },
         // Additional tasks can be added here
-    ]);
+    ];
 
     const [completedTasks, setCompletedTasks] = useState<number[]>([]); // Store completed task IDs
-
-    // Fetch completed tasks from the backend API
-    const fetchCompletedTasks = async () => {
-        try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/tasks/completed/${userName}`);
-            setCompletedTasks(res.data.completedTasks || []); // Set completed tasks state with data from backend
-        } catch (error) {
-            console.error("Error fetching completed tasks:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchCompletedTasks(); // Fetch completed tasks on component mount
-    }, []);
 
     // Handle task completion
     const handleCompleteTask = async (taskId: number, reward: number, url?: string) => {
