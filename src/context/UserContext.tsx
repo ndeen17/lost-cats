@@ -25,11 +25,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${chatId}`);
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
-
-            // Save user data in local storage for persistence
-            localStorage.setItem('userName', res.data.userName);
-            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
-            localStorage.setItem('chatId', chatId);
         } catch (error: any) {
             if (error.response && error.response.status === 404) {
                 console.log("User not found, creating new user.");
@@ -46,11 +41,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/users`, { chatId });
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
-
-            // Store user data in local storage
-            localStorage.setItem('userName', res.data.userName);
-            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
-            localStorage.setItem('chatId', chatId);
+            setChatId(chatId); // Store chat ID when creating a new user
             console.log(`User with Chat ID ${chatId} created successfully.`);
         } catch (error) {
             console.error("Error creating user:", error);
@@ -69,9 +60,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             console.log(`Updating CTS balance for Chat ID ${chatId} to ${newBalance}`);
             const res = await axios.patch(`${import.meta.env.VITE_API_URL}/users/${chatId}`, { ctsBalance: newBalance });
             setCtsBalance(res.data.ctsBalance);
-
-            // Update local storage
-            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
         } catch (error) {
             console.error("Error updating CTS balance:", error);
         }
@@ -79,17 +67,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Fetch user when the component mounts
-        const storedChatId = localStorage.getItem('chatId');
-        if (storedChatId) {
-            setChatId(storedChatId);
-            fetchUser(storedChatId);
+        if (chatId) {
+            fetchUser(chatId); // Call fetchUser when chatId is available
         } else {
-            console.log("No chat ID found in local storage.");
+            console.log("Chat ID not set.");
         }
-    }, []);
+    }, [chatId]);
 
     return (
-        <UserContext.Provider value={{ userName, setUserName, ctsBalance, updateCtsBalance }}>
+        <UserContext.Provider value={{ userName, ctsBalance, updateCtsBalance, setChatId }}>
             {children}
         </UserContext.Provider>
     );
