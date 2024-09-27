@@ -1,17 +1,25 @@
 // src/pages/InvitePage.tsx
-import { useState } from 'react';
+//import { useState } from 'react';
 
 const InvitePage = () => {
-    const [inviteLink, setInviteLink] = useState('');
+    // const [inviteLink, setInviteLink] = useState('');
 
-    const generateInviteLink = () => {
-        const link = `https://example.com/invite/${Math.random().toString(36).substr(2, 9)}`;
-        setInviteLink(link);
-    };
+    // const generateInviteLink = () => {
+    //     const link = `https://example.com/invite/${Math.random().toString(36).substr(2, 9)}`;
+    //     setInviteLink(link);
+    // };
 
     return (
         <div style={{ padding: '20px', textAlign: 'center' }}>
             <h2>Invite Your Friends</h2>
+
+            {/* Coming Soon Message */}
+            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#FF0000', margin: '20px 0' }}>
+                Coming Soon!
+            </div>
+
+            {/* Commented out the invite link generation button and input */}
+            {/* 
             <button
                 onClick={generateInviteLink}
                 style={{
@@ -35,7 +43,8 @@ const InvitePage = () => {
                         style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #000' }}
                     />
                 </div>
-            )}
+            )} 
+            */}
         </div>
     );
 };

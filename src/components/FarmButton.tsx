@@ -28,7 +28,7 @@ const FarmButton = () => {
         console.log(`Starting farming for user: ${userName}`);
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/farm`, { userName });
+            await axios.post(`${import.meta.env.VITE_API_URL}/farm/farm`, { userName });
             setTimer(9 * 60 * 60 * 1000); // 9 hours in milliseconds
             
             setTimeout(() => {
@@ -45,7 +45,7 @@ const FarmButton = () => {
 
     const handleClaim = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/farm/claim`, { userName });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/farm/farm/claim`, { userName });
             updateCtsBalance(1000); // Add 1000 CTS to user's balance
             alert(response.data.message);
             setCanClaim(false);
