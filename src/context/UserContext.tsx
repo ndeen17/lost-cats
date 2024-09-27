@@ -11,6 +11,7 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [userName, setUserName] = useState<string | null>(null);
     const [ctsBalance, setCtsBalance] = useState<number>(0);
+    const [chatId, setChatId] = useState<string | null>(null); // Store Telegram chatId
 
     // Log API URL to ensure it's set correctly
     useEffect(() => {
@@ -18,16 +19,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     // Fetch user data from the backend
-    const fetchUser = async (name: string) => {
+    const fetchUser = async (chatId: string) => {
         try {
-            console.log(`Fetching data for user: ${name}`);
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${name}`);
+            console.log(`Fetching data for chat ID: ${chatId}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${chatId}`);
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
+
+            // Save user data in local storage for persistence
+            localStorage.setItem('userName', res.data.userName);
+            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
+            localStorage.setItem('chatId', chatId);
         } catch (error: any) {
             if (error.response && error.response.status === 404) {
                 console.log("User not found, creating new user.");
-                await createUser(name); // Create user if not found
+                await createUser(chatId); // Create user if not found
             } else {
                 console.error("Error fetching user:", error);
             }
@@ -35,12 +41,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Create a new user in the backend
-    const createUser = async (name: string) => {
+    const createUser = async (chatId: string) => {
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/users`, { userName: name });
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/users`, { chatId });
             setUserName(res.data.userName);
             setCtsBalance(res.data.ctsBalance);
-            console.log(`User ${name} created successfully.`);
+
+            // Store user data in local storage
+            localStorage.setItem('userName', res.data.userName);
+            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
+            localStorage.setItem('chatId', chatId);
+            console.log(`User with Chat ID ${chatId} created successfully.`);
         } catch (error) {
             console.error("Error creating user:", error);
         }
@@ -48,16 +59,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     // Update CTS balance in the backend
     const updateCtsBalance = async (amount: number) => {
-        if (!userName) {
-            console.error("Cannot update balance: userName is null");
+        if (!chatId) {
+            console.error("Cannot update balance: chatId is null");
             return;
         }
 
         try {
             const newBalance = ctsBalance + amount;
-            console.log(`Updating CTS balance for ${userName} to ${newBalance}`);
-            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/users/${userName}`, { ctsBalance: newBalance });
+            console.log(`Updating CTS balance for Chat ID ${chatId} to ${newBalance}`);
+            const res = await axios.patch(`${import.meta.env.VITE_API_URL}/users/${chatId}`, { ctsBalance: newBalance });
             setCtsBalance(res.data.ctsBalance);
+
+            // Update local storage
+            localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
         } catch (error) {
             console.error("Error updating CTS balance:", error);
         }
@@ -65,14 +79,26 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Fetch user when the component mounts
-        const storedUserName = localStorage.getItem('userName');
-        if (storedUserName) {
-            fetchUser(storedUserName);
+        const storedChatId = localStorage.getItem('chatId');
+        if (storedChatId) {
+            setChatId(storedChatId);
+            fetchUser(storedChatId);
         } else {
-            // If no user found, treat them as a guest and create a guest user
-            const guestUserName = 'Guest_' + Math.floor(Math.random() * 1000); // Generate a random guest username
-            console.log("No user found, creating guest user:", guestUserName);
-            createUser(guestUserName);
+            // Retrieve chatId from Telegram Web App
+            const initData = window.Telegram.WebApp.initData; // Telegram Web App data
+            const chatIdFromTelegram = new URLSearchParams(initData).get('chat_id');
+
+            if (chatIdFromTelegram) {
+                console.log("Telegram chat ID found:", chatIdFromTelegram);
+                setChatId(chatIdFromTelegram);
+
+                // Store chatId in local storage
+                localStorage.setItem('chatId', chatIdFromTelegram);
+
+                fetchUser(chatIdFromTelegram); // Fetch user data based on chatId
+            } else {
+                console.log("No chat ID found in Telegram Web App.");
+            }
         }
     }, []);
 
