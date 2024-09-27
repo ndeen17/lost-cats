@@ -1,9 +1,38 @@
-import { useUser } from '../context/UserContext';
+import { useEffect, useState } from 'react';
+import axios from 'axios'; // Import axios for API calls
 import FarmButton from '../components/FarmButton'; // Import FarmButton component
 import logo from '../assets/logo.png';
 
 const DashboardPage = () => {
-    const { userName, ctsBalance } = useUser();
+    const [userName, setUserName] = useState<string | null>(null); // State for user name
+    const [ctsBalance, setCtsBalance] = useState<number | undefined>(undefined); // State for CTS balance
+    const [error, setError] = useState<string | null>(null); // Error state
+
+    useEffect(() => {
+        const tg = window.Telegram?.WebApp;
+
+        if (tg && tg.initDataUnsafe?.user) {
+            const chatId = tg.initDataUnsafe.user.id; // Get chat ID
+            const username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
+            setUserName(username); // Set user name
+
+            // Fetch user data from the backend
+            const fetchUserData = async () => {
+                try {
+                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${chatId}`);
+                    setCtsBalance(res.data.ctsBalance); // Set CTS balance
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    setError("Failed to load user data.");
+                }
+            };
+
+            fetchUserData(); // Call the fetch function
+        } else {
+            console.warn('No Telegram user data found.');
+            setUserName('Guest'); // Fallback username
+        }
+    }, []);
 
     return (
         <div style={{ padding: '20px', backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
@@ -25,7 +54,11 @@ const DashboardPage = () => {
             </h2>
 
             {/* Display the FarmButton */}
-            <FarmButton /> {/* Replacing TaskSlider with FarmButton */}
+            {error ? (
+                <div style={{ color: 'red', textAlign: 'center' }}>{error}</div> // Display error if exists
+            ) : (
+                <FarmButton /> // Replacing TaskSlider with FarmButton
+            )}
         </div>
     );
 };
