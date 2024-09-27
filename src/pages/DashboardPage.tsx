@@ -1,66 +1,79 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios'; // Import axios for API calls
-import FarmButton from '../components/FarmButton'; // Import FarmButton component
-import logo from '../assets/logo.png';
+import logo from '../assets/Non.png';
 
-const DashboardPage = () => {
-    const [userName, setUserName] = useState<string | null>(null); // State for user name
-    const [ctsBalance, setCtsBalance] = useState<number | undefined>(undefined); // State for CTS balance
+const Dashboard = () => {
+    const [localUsername, setLocalUsername] = useState<string | null>(null);
+    const [ctsBalance, setCtsBalance] = useState<number>(0); // State for CTS balance
     const [error, setError] = useState<string | null>(null); // Error state
 
+    // Fetch user data from the backend
+    const fetchUserData = async (userName: string) => {
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userName}`);
+            setLocalUsername(res.data.userName); // Set username
+            setCtsBalance(res.data.ctsBalance); // Set CTS balance
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            setError("Failed to load user data.");
+        }
+    };
+
     useEffect(() => {
-        const tg = window.Telegram?.WebApp;
+        const userNameFromStorage = localStorage.getItem('username'); // Get username from local storage
 
-        if (tg && tg.initDataUnsafe?.user) {
-            const chatId = tg.initDataUnsafe.user.id; // Get chat ID
-            const username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
-            setUserName(username); // Set user name
-
-            // Fetch user data from the backend
-            const fetchUserData = async () => {
-                try {
-                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${chatId}`);
-                    setCtsBalance(res.data.ctsBalance); // Set CTS balance
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                    setError("Failed to load user data.");
-                }
-            };
-
-            fetchUserData(); // Call the fetch function
+        if (userNameFromStorage) {
+            fetchUserData(userNameFromStorage); // Fetch user data using the username
         } else {
-            console.warn('No Telegram user data found.');
-            setUserName('Guest'); // Fallback username
+            console.warn('No username found in local storage.');
+            setLocalUsername('Guest'); // Fallback username if not found
         }
     }, []);
 
     return (
-        <div style={{ padding: '20px', backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
-            {/* Display the logo */}
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <img src={logo} alt="Logo" style={{ width: '150px', height: 'auto' }} />
+        <div style={{ 
+            padding: '20px', 
+            backgroundColor: '#121212', 
+            color: '#fff', 
+            minHeight: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            textAlign: 'center'
+        }}>
+            <div style={{ marginBottom: '20px' }}>
+                <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
-
-            {/* Displaying user name */}
-            {userName ? (
-                <h1 style={{ textAlign: 'center', fontSize: '28px', margin: '20px 0' }}>Hello, {userName}!</h1>
-            ) : (
-                <h2 style={{ textAlign: 'center', fontSize: '28px', margin: '20px 0' }}>Loading...</h2> // Show loading state if userName is not yet available
+            <h1 style={{ fontSize: '6vw', margin: '20px 0', lineHeight: '1.2' }}>
+                Welcome, {localUsername || 'Loading...'}!
+            </h1>
+            <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
+                Your current balance: {ctsBalance} CTS
+            </p>
+            {error && (
+                <div style={{ color: 'red', fontSize: '3vw' }}>{error}</div>
             )}
-            
-            {/* Displaying CTS balance */}
-            <h2 style={{ textAlign: 'center', fontSize: '22px', margin: '20px 0' }}>
-                Your CTS Balance: {ctsBalance !== undefined ? ctsBalance : 'Loading...'} {/* Show loading state for balance if needed */}
-            </h2>
-
-            {/* Display the FarmButton */}
-            {error ? (
-                <div style={{ color: 'red', textAlign: 'center' }}>{error}</div> // Display error if exists
-            ) : (
-                <FarmButton /> // Replacing TaskSlider with FarmButton
-            )}
+            <div style={{ marginTop: '40px' }}>
+                <a 
+                    href="/tasks" // Link to your tasks page
+                    style={{
+                        color: '#fff',
+                        backgroundColor: '#00f',
+                        padding: '10px 20px',
+                        borderRadius: '5px',
+                        fontSize: '4vw',
+                        textDecoration: 'none',
+                        transition: 'background-color 0.3s',
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0057e7')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00f')}
+                >
+                    View Tasks
+                </a>
+            </div>
         </div>
     );
 };
 
-export default DashboardPage;
+export default Dashboard;
