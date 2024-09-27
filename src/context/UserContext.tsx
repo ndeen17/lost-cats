@@ -84,21 +84,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             setChatId(storedChatId);
             fetchUser(storedChatId);
         } else {
-            // Retrieve chatId from Telegram Web App
-            const initData = window.Telegram.WebApp.initData; // Telegram Web App data
-            const chatIdFromTelegram = new URLSearchParams(initData).get('chat_id');
-
-            if (chatIdFromTelegram) {
-                console.log("Telegram chat ID found:", chatIdFromTelegram);
-                setChatId(chatIdFromTelegram);
-
-                // Store chatId in local storage
-                localStorage.setItem('chatId', chatIdFromTelegram);
-
-                fetchUser(chatIdFromTelegram); // Fetch user data based on chatId
-            } else {
-                console.log("No chat ID found in Telegram Web App.");
-            }
+            console.log("No chat ID found in local storage.");
         }
     }, []);
 
