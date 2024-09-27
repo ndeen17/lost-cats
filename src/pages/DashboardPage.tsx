@@ -1,4 +1,3 @@
-
 import { useUser } from '../context/UserContext';
 import FarmButton from '../components/FarmButton'; // Import FarmButton component
 import logo from '../assets/logo.png';
@@ -14,10 +13,16 @@ const DashboardPage = () => {
             </div>
 
             {/* Displaying user name */}
-            <h1 style={{ textAlign: 'center', fontSize: '28px', margin: '20px 0' }}>Hello, {userName}</h1>
+            {userName ? (
+                <h1 style={{ textAlign: 'center', fontSize: '28px', margin: '20px 0' }}>Hello, {userName}!</h1>
+            ) : (
+                <h2 style={{ textAlign: 'center', fontSize: '28px', margin: '20px 0' }}>Loading...</h2> // Show loading state if userName is not yet available
+            )}
             
             {/* Displaying CTS balance */}
-            <h2 style={{ textAlign: 'center', fontSize: '22px', margin: '20px 0' }}>Your CTS Balance: {ctsBalance}</h2>
+            <h2 style={{ textAlign: 'center', fontSize: '22px', margin: '20px 0' }}>
+                Your CTS Balance: {ctsBalance !== undefined ? ctsBalance : 'Loading...'} {/* Show loading state for balance if needed */}
+            </h2>
 
             {/* Display the FarmButton */}
             <FarmButton /> {/* Replacing TaskSlider with FarmButton */}
