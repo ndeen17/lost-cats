@@ -1,78 +1,70 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios'; // Import axios for API calls
-import { useUser } from '../context/UserContext'; // Import user context
-import logo from '../assets/Non.png';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for routing
+import { useUser } from '../context/UserContext'; // Import user context to access userName
+import axios from 'axios';
+
+// Define the User interface to match the structure you expect from your backend
+interface User {
+    userName: string;
+    ctsBalance: number; // Add any additional fields you want to display here
+}
 
 const WelcomePage = () => {
-    const { userName } = useUser(); // Get username from context
-    const [ctsBalance, setCtsBalance] = useState<number>(0); // State for CTS balance
-    const [error, setError] = useState<string | null>(null); // Error state
-    const navigate = useNavigate(); // Initialize navigate for routing
+    const { userName } = useUser(); // Get userName from the context
+    const [userData, setUserData] = useState<User | null>(null); // State to store user data
+    const [error, setError] = useState<string | null>(null); // State to handle errors
 
-    // Fetch user data directly from the backend
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                console.log('API URL:', import.meta.env.VITE_API_URL); // Log API URL for debugging
+    // Function to fetch user data from the backend
+    const fetchUserData = async () => {
+        try {
+            // Log the API URL to ensure it's correctly set
+            console.log('API URL:', import.meta.env.VITE_API_URL);
 
-                // Fetch user data using the username from context
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userName}`);
-                setCtsBalance(res.data.ctsBalance); // Set the CTS balance from response
-                
-                // Redirect to dashboard after successfully fetching user data
-                navigate('/dashboard');
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setError("Failed to load user data."); // Set error message
+            // Fetch user data using userName
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userName}`);
+
+            // Check if the response has data
+            if (res.data) {
+                setUserData(res.data); // Set user data in state
+            } else {
+                throw new Error("Invalid response format"); // Handle unexpected responses
             }
-        };
+        } catch (error) {
+            console.error("Error fetching user data:", error); // Log the error for debugging
+            setError("Failed to load user data."); // Set error message
+        }
+    };
 
-        fetchUserData();
-    }, [userName, navigate]); // Run when userName changes
+    // Use useEffect to fetch user data when the component mounts or userName changes
+    useEffect(() => {
+        fetchUserData(); // Call the function to fetch user data
+    }, [userName]); // Dependency array: fetch when userName changes
 
     return (
-        <div style={{ 
-            padding: '20px', 
-            backgroundColor: '#121212', 
-            color: '#fff', 
-            minHeight: '100vh', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            textAlign: 'center'
-        }}>
-            <div style={{ marginBottom: '20px' }}>
-                <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
-            </div>
-            <h1 style={{ fontSize: '6vw', margin: '20px 0', lineHeight: '1.2' }}>
-                Welcome, {userName}!
-            </h1>
-            <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
-                Your current balance: {ctsBalance} CTS
-            </p>
-            {error && (
-                <div style={{ color: 'red', fontSize: '3vw' }}>{error}</div>
+        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+            <h2 style={{ textAlign: 'center', color: '#333' }}>Welcome!</h2>
+
+            {/* Error Handling */}
+            {error ? (
+                <div style={{
+                    padding: '15px',
+                    borderRadius: '8px',
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24',
+                    border: '1px solid #f5c6cb',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                }}>
+                    {error} {/* Display error message */}
+                </div>
+            ) : (
+                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                    {userData ? (
+                        <h3>Welcome back, {userData.userName}! Your CTS Balance: {userData.ctsBalance}</h3>
+                    ) : (
+                        <p>Loading user data...</p> // Display loading message while data is being fetched
+                    )}
+                </div>
             )}
-            <div style={{ marginTop: '40px' }}>
-                <a 
-                    href="/dashboard" // Redirect to the dashboard
-                    style={{
-                        color: '#fff',
-                        backgroundColor: '#00f',
-                        padding: '10px 20px',
-                        borderRadius: '5px',
-                        fontSize: '4vw',
-                        textDecoration: 'none',
-                        transition: 'background-color 0.3s',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0057e7')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00f')}
-                >
-                    Go to Dashboard
-                </a>
-            </div>
         </div>
     );
 };
