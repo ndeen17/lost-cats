@@ -2,35 +2,26 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'; // Import axios for API calls
 import logo from '../assets/Non.png';
 
-const Dashboard = () => {
-    const [localUsername, setLocalUsername] = useState<string | null>(null);
+const WelcomePage = () => {
+    const [username, setUsername] = useState<string | null>(null); // State for username
     const [ctsBalance, setCtsBalance] = useState<number>(0); // State for CTS balance
     const [error, setError] = useState<string | null>(null); // Error state
 
+    // Fetch user data directly from the backend using a fixed username or ID
     useEffect(() => {
-        const tg = window.Telegram?.WebApp;
+        const fetchUserData = async () => {
+            try {
+                // Replace 'username' with the actual value you are using for identification
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/USERNAME_OR_CHATID`);
+                setUsername(res.data.userName); // Set the username from response
+                setCtsBalance(res.data.ctsBalance); // Set the CTS balance from response
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setError("Failed to load user data.");
+            }
+        };
 
-        if (tg && tg.initDataUnsafe?.user) {
-            const chatId = tg.initDataUnsafe.user.id; // Get chat ID
-            const username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
-            setLocalUsername(username);
-
-            // Fetch user data from the backend
-            const fetchUserData = async () => {
-                try {
-                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${chatId}`);
-                    setCtsBalance(res.data.ctsBalance); // Set CTS balance
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                    setError("Failed to load user data.");
-                }
-            };
-
-            fetchUserData(); // Call the fetch function
-        } else {
-            console.warn('No Telegram user data found.');
-            setLocalUsername('Guest'); // Fallback username
-        }
+        fetchUserData(); // Call the function to fetch user data on page load
     }, []);
 
     return (
@@ -49,7 +40,7 @@ const Dashboard = () => {
                 <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
             <h1 style={{ fontSize: '6vw', margin: '20px 0', lineHeight: '1.2' }}>
-                Welcome, {localUsername}!
+                Welcome, {username}!
             </h1>
             <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
                 Your current balance: {ctsBalance} CTS
@@ -59,7 +50,7 @@ const Dashboard = () => {
             )}
             <div style={{ marginTop: '40px' }}>
                 <a 
-                    href="/tasks" // Link to your tasks page
+                    href="/dashboard" // Redirect to the dashboard
                     style={{
                         color: '#fff',
                         backgroundColor: '#00f',
@@ -72,11 +63,11 @@ const Dashboard = () => {
                     onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0057e7')}
                     onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00f')}
                 >
-                    View Tasks
+                    Go to Dashboard
                 </a>
             </div>
         </div>
     );
 };
 
-export default Dashboard;
+export default WelcomePage;
