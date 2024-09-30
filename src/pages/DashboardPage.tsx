@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios'; // Import axios for API calls
+import axios from 'axios';
 import logo from '../assets/Non.png';
 
 const Dashboard = () => {
     const [username, setUsername] = useState<string | null>(null);
-    const [ctsBalance, setCtsBalance] = useState<number | null>(null); // State for CTS balance
-    const [error, setError] = useState<string | null>(null); // Error state
+    const [ctsBalance, setCtsBalance] = useState<number | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
-            // Attempt to retrieve username from local storage
             const storedUsername = localStorage.getItem('username');
             if (storedUsername) {
                 try {
-                    // Fetch user data from backend using stored username
                     const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
-                    setUsername(res.data.userName); // Set username from response
-                    setCtsBalance(res.data.ctsBalance); // Set CTS balance from response
-                    localStorage.setItem('username', res.data.userName); // Store username in local storage
+                    setUsername(res.data.userName);
+                    setCtsBalance(res.data.ctsBalance);
+                    localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                     setError("Failed to load user data.");
@@ -25,23 +24,18 @@ const Dashboard = () => {
             } else {
                 setError("No username found in local storage.");
             }
+            setLoading(false); // Set loading to false after attempting to fetch data
         };
 
-        fetchUserData(); // Fetch user data
+        fetchUserData();
     }, []);
 
+    if (loading) {
+        return <div>Loading...</div>; // Optional: display a loading state
+    }
+
     return (
-        <div style={{ 
-            padding: '20px', 
-            backgroundColor: '#121212', 
-            color: '#fff', 
-            minHeight: '100vh', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            textAlign: 'center'
-        }}>
+        <div style={{ padding: '20px', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <div style={{ marginBottom: '20px' }}>
                 <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
@@ -58,7 +52,7 @@ const Dashboard = () => {
             )}
             <div style={{ marginTop: '40px' }}>
                 <a 
-                    href="/tasks" // Link to your tasks page
+                    href="/tasks" 
                     style={{
                         color: '#fff',
                         backgroundColor: '#00f',
