@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'; // Add useEffect to the import
-import { useUser } from '../context/UserContext';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Define Task interface to ensure type safety
@@ -11,8 +10,6 @@ interface Task {
 }
 
 const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void }) => {
-    const { updateCtsBalance, userName } = useUser(); // Retrieve CTS balance and userName from context
-
     const tasks: Task[] = [
         { id: 1, task: 'Join our Telegram group', reward: 500, url: 'https://telegram.org' },
         { id: 2, task: 'Follow us on Twitter', reward: 600, url: 'https://twitter.com' },
@@ -42,6 +39,13 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
         }
 
         try {
+            // Get username from local storage
+            const userName = localStorage.getItem('username');
+            if (!userName) {
+                alert("User not found. Please sign in again.");
+                return;
+            }
+
             // Notify the backend about task completion
             await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${taskId}`, { userName });
 
@@ -49,7 +53,8 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
             setCompletedTasks([...completedTasks, taskId]);
 
             // Update the CTS balance for the user
-            updateCtsBalance(reward);
+            const currentBalance = parseInt(localStorage.getItem('ctsBalance') || '0', 10);
+            localStorage.setItem('ctsBalance', (currentBalance + reward).toString());
 
             // Notify parent component (if necessary)
             onTaskComplete(taskId);

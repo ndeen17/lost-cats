@@ -11,7 +11,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     // This context will not manage any user data or side effects anymore.
 
     return (
-        <UserContext.Provider value={{ userName: null, ctsBalance: 0, updateCtsBalance: () => {}, setChatId: () => {} }}>
+        <UserContext.Provider value={{ userName: null, ctsBalance: 0, updateCtsBalance: () => {}, }}>
             {children}
         </UserContext.Provider>
     );

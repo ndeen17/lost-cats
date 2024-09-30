@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
 // Define the User type
@@ -9,7 +8,6 @@ interface User {
 }
 
 const LeaderboardPage = () => {
-    const { userName } = useUser();
     const [leaderboardData, setLeaderboardData] = useState<User[]>([]);
     const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
     const [currentUserScore, setCurrentUserScore] = useState<number>(0);
@@ -26,6 +24,10 @@ const LeaderboardPage = () => {
             
             if (res.data && Array.isArray(res.data)) {
                 setLeaderboardData(res.data);
+                
+                // Get username from local storage
+                const userName = localStorage.getItem('username');
+                
                 const currentUser = res.data.find((user: User) => user.userName === userName);
                 if (currentUser) {
                     setCurrentUserScore(currentUser.score);
