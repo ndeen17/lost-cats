@@ -1,78 +1,73 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios'; // Import axios for API calls
-import { useUser } from '../context/UserContext'; // Import user context
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/Non.png';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for routing
+import axios from 'axios';
 
 const WelcomePage = () => {
-    const { userName } = useUser(); // Get username from context
-    const [ctsBalance, setCtsBalance] = useState<number>(0); // State for CTS balance
-    const [error, setError] = useState<string | null>(null); // Error state
-    const navigate = useNavigate(); // Initialize navigate for routing
+    const [username, setUsername] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    // Fetch user data directly from the backend
+    // Check for existing username in local storage on component mount
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                console.log('API URL:', import.meta.env.VITE_API_URL); // Log API URL for debugging
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) {
+            navigate('/dashboard'); // Redirect to dashboard if user is already signed in
+        }
+    }, [navigate]);
 
-                // Fetch user data using the username from context
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userName}`);
-                setCtsBalance(res.data.ctsBalance); // Set the CTS balance from response
-                
-                // Redirect to dashboard after successfully fetching user data
-                navigate('/dashboard');
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setError("Failed to load user data."); // Set error message
-            }
-        };
+    const handleSignIn = async () => {
+        if (!username) {
+            setError("Username cannot be empty");
+            return;
+        }
 
-        fetchUserData();
-    }, [userName, navigate]); // Run when userName changes
+        try {
+            // Removed the check for duplicates/reserved usernames
+            // Call the backend to save user info
+            await axios.post(`${import.meta.env.VITE_API_URL}/users`, { userName: username }); // Changed 'username' to 'userName'
+            // Store the username in local storage
+            localStorage.setItem('username', username);
+            // Navigate to dashboard
+            navigate('/dashboard');
+        } catch (err) {
+            setError("Failed to sign in. Try again.");
+        }
+    };
 
     return (
-        <div style={{ 
-            padding: '20px', 
-            backgroundColor: '#121212', 
-            color: '#fff', 
-            minHeight: '100vh', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'center', 
+        <div style={{
+            padding: '20px',
+            backgroundColor: '#121212',
+            color: '#fff',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
             textAlign: 'center'
         }}>
-            <div style={{ marginBottom: '20px' }}>
-                <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
-            </div>
-            <h1 style={{ fontSize: '6vw', margin: '20px 0', lineHeight: '1.2' }}>
-                Welcome, {userName}!
-            </h1>
-            <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
-                Your current balance: {ctsBalance} CTS
-            </p>
-            {error && (
-                <div style={{ color: 'red', fontSize: '3vw' }}>{error}</div>
-            )}
-            <div style={{ marginTop: '40px' }}>
-                <a 
-                    href="/dashboard" // Redirect to the dashboard
-                    style={{
-                        color: '#fff',
-                        backgroundColor: '#00f',
-                        padding: '10px 20px',
-                        borderRadius: '5px',
-                        fontSize: '4vw',
-                        textDecoration: 'none',
-                        transition: 'background-color 0.3s',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0057e7')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00f')}
-                >
-                    Go to Dashboard
-                </a>
-            </div>
+            <img src={logo} alt="logo" style={{ maxWidth: '200px', height: 'auto' }} />
+            <h1>Welcome to the Game!</h1>
+            <input
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{ padding: '10px', margin: '10px 0', borderRadius: '5px' }}
+            />
+            {error && <div style={{ color: 'red' }}>{error}</div>}
+            <button onClick={handleSignIn} style={{
+                color: '#fff',
+                backgroundColor: '#00f',
+                padding: '10px 20px',
+                borderRadius: '5px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s',
+            }}>
+                Sign In
+            </button>
         </div>
     );
 };

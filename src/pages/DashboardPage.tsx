@@ -4,40 +4,30 @@ import logo from '../assets/Non.png';
 
 const Dashboard = () => {
     const [username, setUsername] = useState<string | null>(null);
-    const [ctsBalance, setCtsBalance] = useState<number>(0); // State for CTS balance
+    const [ctsBalance, setCtsBalance] = useState<number | null>(null); // State for CTS balance
     const [error, setError] = useState<string | null>(null); // Error state
 
     useEffect(() => {
-        // Assuming you're passing the username or chatId as a URL param or through some state management
         const fetchUserData = async () => {
-            if (!username) return; // Only fetch if username is available
-
-            try {
-                // Replace 'username' with whatever unique identifier (like chatId) you're using
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${username}`);
-                setCtsBalance(res.data.ctsBalance); // Set CTS balance
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setError("Failed to load user data.");
+            // Attempt to retrieve username from local storage
+            const storedUsername = localStorage.getItem('username');
+            if (storedUsername) {
+                try {
+                    // Fetch user data from backend using stored username
+                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
+                    setUsername(res.data.userName); // Set username from response
+                    setCtsBalance(res.data.ctsBalance); // Set CTS balance from response
+                    localStorage.setItem('username', res.data.userName); // Store username in local storage
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    setError("Failed to load user data.");
+                }
+            } else {
+                setError("No username found in local storage.");
             }
         };
 
         fetchUserData(); // Fetch user data
-    }, [username]);
-
-    // Fetch the username or chatId when the component is mounted
-    useEffect(() => {
-        const tg = window.Telegram?.WebApp;
-
-        if (tg && tg.initDataUnsafe?.user) {
-            // Set the username based on Telegram's data (or you can use chatId here if preferred)
-            const user = tg.initDataUnsafe.user;
-            const username = user.username || user.first_name;
-            setUsername(username);
-        } else {
-            console.warn('No Telegram user data found.');
-            setUsername('Guest'); // Fallback username
-        }
     }, []);
 
     return (
@@ -56,11 +46,13 @@ const Dashboard = () => {
                 <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
             <h1 style={{ fontSize: '6vw', margin: '20px 0', lineHeight: '1.2' }}>
-                Welcome, {username}!
+                Welcome, {username || 'Guest'}!
             </h1>
-            <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
-                Your current balance: {ctsBalance} CTS
-            </p>
+            {ctsBalance !== null && (
+                <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
+                    Your current balance: {ctsBalance} CTS
+                </p>
+            )}
             {error && (
                 <div style={{ color: 'red', fontSize: '3vw' }}>{error}</div>
             )}
