@@ -6,7 +6,6 @@ const Dashboard = () => {
     const [username, setUsername] = useState<string | null>(null);
     const [ctsBalance, setCtsBalance] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -17,6 +16,8 @@ const Dashboard = () => {
                     setUsername(res.data.userName);
                     setCtsBalance(res.data.ctsBalance);
                     localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
+                    // Store username in local storage
+                    localStorage.setItem('username', res.data.userName);
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                     setError("Failed to load user data.");
@@ -24,15 +25,10 @@ const Dashboard = () => {
             } else {
                 setError("No username found in local storage.");
             }
-            setLoading(false); // Set loading to false after attempting to fetch data
         };
 
         fetchUserData();
     }, []);
-
-    if (loading) {
-        return <div>Loading...</div>; // Optional: display a loading state
-    }
 
     return (
         <div style={{ padding: '20px', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
