@@ -1,48 +1,71 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Define the User type
 interface User {
     userName: string;
     score: number;
 }
 
+const LEADERBOARD_EXPIRATION_TIME = 10 * 60 * 1000; // 10 minutes
+
 const LeaderboardPage = () => {
     const [leaderboardData, setLeaderboardData] = useState<User[]>([]);
     const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
     const [currentUserScore, setCurrentUserScore] = useState<number>(0);
-    const [error, setError] = useState<string | null>(null); // New error state
+    const [error, setError] = useState<string | null>(null);
 
-    // Fetch leaderboard data from the backend
     const fetchLeaderboard = async () => {
         try {
-            // Log the API URL to ensure it's correctly set
-            console.log('API URL:', import.meta.env.VITE_API_URL);
-            
-            // Use environment variable for the API URL
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`);
-            
             if (res.data && Array.isArray(res.data)) {
                 setLeaderboardData(res.data);
-                
-                // Get username from local storage
+
                 const userName = localStorage.getItem('username');
-                
                 const currentUser = res.data.find((user: User) => user.userName === userName);
+                
                 if (currentUser) {
                     setCurrentUserScore(currentUser.score);
                     setCurrentUserRank(res.data.indexOf(currentUser) + 1);
                 }
+
+                // Cache the data and store timestamp
+                localStorage.setItem('leaderboardData', JSON.stringify(res.data));
+                localStorage.setItem('leaderboardTimestamp', Date.now().toString());
             } else {
-                throw new Error("Invalid response format"); // Handle unexpected responses
+                throw new Error("Invalid response format");
             }
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
-            setError("Failed to load leaderboard data.");
+            setError("Unable to load leaderboard. Please try again later.");
         }
     };
 
     useEffect(() => {
+        const cachedData = localStorage.getItem('leaderboardData');
+        const cachedTimestamp = localStorage.getItem('leaderboardTimestamp');
+
+        // Check if cached data is available and not expired
+        if (cachedData && cachedTimestamp) {
+            const currentTime = Date.now();
+            const expirationTime = parseInt(cachedTimestamp, 10) + LEADERBOARD_EXPIRATION_TIME;
+
+            if (currentTime < expirationTime) {
+                // Use cached data
+                const parsedData = JSON.parse(cachedData);
+                setLeaderboardData(parsedData);
+
+                const userName = localStorage.getItem('username');
+                const currentUser = parsedData.find((user: User) => user.userName === userName);
+                
+                if (currentUser) {
+                    setCurrentUserScore(currentUser.score);
+                    setCurrentUserRank(parsedData.indexOf(currentUser) + 1);
+                }
+                return;
+            }
+        }
+
+        // Fetch new data if no valid cache is found
         fetchLeaderboard();
     }, []);
 
@@ -50,7 +73,6 @@ const LeaderboardPage = () => {
         <div style={{ padding: '20px', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
             <h2 style={{ textAlign: 'center', color: '#333' }}>Leaderboard</h2>
 
-            {/* Error Handling */}
             {error ? (
                 <div style={{
                     padding: '15px',
@@ -65,7 +87,6 @@ const LeaderboardPage = () => {
                 </div>
             ) : (
                 <>
-                    {/* Message displaying current user's rank and score */}
                     <div style={{
                         marginBottom: '20px',
                         padding: '15px',
@@ -81,7 +102,6 @@ const LeaderboardPage = () => {
                             : 'Loading...'}
                     </div>
 
-                    {/* Table displaying the leaderboard */}
                     <div style={{
                         color: 'black',
                         borderCollapse: 'collapse',
