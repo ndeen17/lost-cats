@@ -11,30 +11,34 @@ const LeaderboardPage = () => {
     const [leaderboardData, setLeaderboardData] = useState<User[]>([]);
     const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
     const [currentUserScore, setCurrentUserScore] = useState<number>(0);
-    const [error, setError] = useState<string | null>(null); // New error state
+    const [error, setError] = useState<string | null>(null);
 
     // Fetch leaderboard data from the backend
     const fetchLeaderboard = async () => {
         try {
-            // Log the API URL to ensure it's correctly set
-            console.log('API URL:', import.meta.env.VITE_API_URL);
-            
-            // Use environment variable for the API URL
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`);
-            
+
             if (res.data && Array.isArray(res.data)) {
+                // Store leaderboard data in localStorage
+                localStorage.setItem('leaderboardData', JSON.stringify(res.data));
+
+                // Process leaderboard data
                 setLeaderboardData(res.data);
                 
-                // Get username from local storage
+                // Get username from localStorage
                 const userName = localStorage.getItem('username');
-                
                 const currentUser = res.data.find((user: User) => user.userName === userName);
+                
                 if (currentUser) {
                     setCurrentUserScore(currentUser.score);
                     setCurrentUserRank(res.data.indexOf(currentUser) + 1);
+                    
+                    // Store rank and score in localStorage
+                    localStorage.setItem('currentUserRank', (res.data.indexOf(currentUser) + 1).toString());
+                    localStorage.setItem('currentUserScore', currentUser.score.toString());
                 }
             } else {
-                throw new Error("Invalid response format"); // Handle unexpected responses
+                throw new Error("Invalid response format");
             }
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
@@ -43,7 +47,19 @@ const LeaderboardPage = () => {
     };
 
     useEffect(() => {
-        fetchLeaderboard();
+        const storedLeaderboardData = localStorage.getItem('leaderboardData');
+        const storedUserRank = localStorage.getItem('currentUserRank');
+        const storedUserScore = localStorage.getItem('currentUserScore');
+
+        if (storedLeaderboardData && storedUserRank && storedUserScore) {
+            // Use cached data from localStorage
+            setLeaderboardData(JSON.parse(storedLeaderboardData));
+            setCurrentUserRank(parseInt(storedUserRank));
+            setCurrentUserScore(parseFloat(storedUserScore));
+        } else {
+            // Fetch data only if not available in localStorage
+            fetchLeaderboard();
+        }
     }, []);
 
     return (

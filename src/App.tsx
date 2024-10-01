@@ -27,7 +27,7 @@ const Footer = () => {
             alignItems: 'center',
             padding: '10px 0',
             borderTop: '1px solid #333',
-            backgroundColor: '#000',
+            backgroundColor: '#7d0000',
             position: 'fixed',
             bottom: 0,
             width: '100%',

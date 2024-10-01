@@ -8,30 +8,40 @@ const Dashboard = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const storedUsername = localStorage.getItem('username');
-            if (storedUsername) {
-                try {
-                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
-                    setUsername(res.data.userName);
-                    setCtsBalance(res.data.ctsBalance);
-                    localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
-                    // Store username in local storage
-                    localStorage.setItem('username', res.data.userName);
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                    setError("Failed to load user data.");
-                }
-            } else {
-                setError("No username found in local storage.");
-            }
-        };
+        const storedUsername = localStorage.getItem('username');
+        const storedCtsBalance = localStorage.getItem('ctsBalance');
 
-        fetchUserData();
+        // Use stored data if available
+        if (storedUsername && storedCtsBalance) {
+            setUsername(storedUsername);
+            setCtsBalance(parseFloat(storedCtsBalance));
+        } else {
+            // Fetch data if not in local storage
+            const fetchUserData = async () => {
+                if (storedUsername) {
+                    try {
+                        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
+                        setUsername(res.data.userName);
+                        setCtsBalance(res.data.ctsBalance);
+
+                        // Store the data in local storage
+                        localStorage.setItem('username', res.data.userName);
+                        localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
+                    } catch (error) {
+                        console.error("Error fetching user data:", error);
+                        setError("Failed to load user data.");
+                    }
+                } else {
+                    setError("No username found in local storage.");
+                }
+            };
+
+            fetchUserData(); // Fetch user data if not found in local storage
+        }
     }, []);
 
     return (
-        <div style={{ padding: '20px', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ padding: '20px', backgroundColor: '#7d0000', color: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <div style={{ marginBottom: '20px' }}>
                 <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
@@ -40,7 +50,7 @@ const Dashboard = () => {
             </h1>
             {ctsBalance !== null && (
                 <p style={{ fontSize: '4vw', margin: '10px 0 20px' }}>
-                    Your current balance: {ctsBalance} CTS
+                    Your current balance: {ctsBalance} $NDT
                 </p>
             )}
             {error && (
