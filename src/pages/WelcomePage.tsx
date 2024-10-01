@@ -38,7 +38,7 @@ const WelcomePage = () => {
     return (
         <div style={{
             padding: '20px',
-            backgroundColor: '#121212',
+            backgroundColor: '#7d0000',
             color: '#fff',
             minHeight: '100vh',
             display: 'flex',
