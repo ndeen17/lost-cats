@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/Non.png';
 
-const InvitePage = () => {
+const InvitePage: React.FC = () => {
+    const [inviteCount, setInviteCount] = useState(0);
+    const [totalCTS, setTotalCTS] = useState(0);
     const [inviteLink, setInviteLink] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const userName = localStorage.getItem('username'); // Get username from local storage
 
     useEffect(() => {
         const fetchInviteData = async () => {
             try {
-                const response = await fetch(`/api/invite-data?userName=${userName}`);
+                const response = await fetch('/api/invite-data'); // Update with your API endpoint
                 const data = await response.json();
                 if (response.ok) {
-                    setInviteLink(data.inviteLink);
+                    setInviteCount(data.inviteCount);
+                    setTotalCTS(data.ctsEarned);
                 } else {
                     setError(data.message || "Failed to load invite data.");
                 }
@@ -23,18 +25,15 @@ const InvitePage = () => {
         };
 
         fetchInviteData();
-    }, [userName]);
+    }, []);
 
     const generateInviteLink = async () => {
         try {
-            const response = await fetch('/api/generate-invite-link', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userName }),
-            });
+            const response = await fetch('/api/generate-invite-link', { method: 'POST' });
             const data = await response.json();
             if (response.ok) {
                 setInviteLink(data.inviteLink);
+                setError(null); // Clear any previous errors
             } else {
                 setError(data.message || "Failed to generate invite link.");
             }
@@ -50,28 +49,94 @@ const InvitePage = () => {
     };
 
     return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-            <h2 style={{ fontWeight: 'bold' }}>Invite Friends to Get More NDT</h2>
-            <img src={logo} alt="Logo" style={{ margin: '20px', width: '150px' }} />
+        <div style={styles.container}>
+            <img src={logo} alt="Logo" style={styles.logo} />
+            <h2 style={styles.title}>Invite Friends to Get More NDT</h2>
+            <h3>Total Friends Invited: <span style={styles.highlight}>{inviteCount}</span></h3>
+            <h3>Total NDT Earned: <span style={styles.highlight}>{totalCTS}</span></h3>
 
-            {/* Display invite link or button */}
-            {inviteLink ? (
-                <div>
-                    <p>Share this link with your friends:</p>
-                    <input type="text" readOnly value={inviteLink} style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #000' }} />
-                    <button onClick={copyToClipboard} style={{ marginTop: '10px', padding: '10px 20px', borderRadius: '5px', backgroundColor: '#000', color: '#fff' }}>
-                        Copy Link
+            <div style={styles.inviteSection}>
+                {inviteCount === 0 ? (
+                    <>
+                        <button onClick={generateInviteLink} style={styles.button}>
+                            Generate Invite Link
+                        </button>
+                        {inviteLink && (
+                            <div style={styles.linkContainer}>
+                                <p>Share this link with your friends:</p>
+                                <input type="text" readOnly value={inviteLink} style={styles.linkInput} />
+                                <button onClick={copyToClipboard} style={styles.copyButton}>
+                                    Copy Link
+                                </button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <button onClick={generateInviteLink} style={styles.button}>
+                        Invite More Friends
                     </button>
-                </div>
-            ) : (
-                <button onClick={generateInviteLink} style={{ padding: '10px 20px', borderRadius: '5px', backgroundColor: '#000', color: '#fff' }}>
-                    Generate Invite Link
-                </button>
-            )}
+                )}
+            </div>
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p style={styles.error}>{error}</p>}
         </div>
     );
+};
+
+// Define styles as a constant object
+const styles = {
+    container: {
+        padding: '20px',
+        textAlign: 'center' as 'center', // Explicit type for textAlign
+        minHeight: '100vh',
+    } as React.CSSProperties,
+    logo: {
+        margin: '20px',
+        width: '150px',
+    } as React.CSSProperties,
+    title: {
+        fontWeight: 'bold',
+        margin: '20px 0',
+    } as React.CSSProperties,
+    highlight: {
+        fontWeight: 'bold',
+        color: '#00f',
+    } as React.CSSProperties,
+    inviteSection: {
+        marginTop: '30px',
+    } as React.CSSProperties,
+    button: {
+        padding: '10px 20px',
+        borderRadius: '5px',
+        backgroundColor: '#000',
+        color: '#fff',
+        cursor: 'pointer',
+        border: 'none',
+        margin: '10px 0',
+    } as React.CSSProperties,
+    linkContainer: {
+        marginTop: '20px',
+    } as React.CSSProperties,
+    linkInput: {
+        width: '100%',
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        marginTop: '10px',
+    } as React.CSSProperties,
+    copyButton: {
+        marginTop: '10px',
+        padding: '10px 20px',
+        borderRadius: '5px',
+        backgroundColor: '#000',
+        color: '#fff',
+        cursor: 'pointer',
+        border: 'none',
+    } as React.CSSProperties,
+    error: {
+        color: 'red',
+        marginTop: '10px',
+    } as React.CSSProperties,
 };
 
 export default InvitePage;
