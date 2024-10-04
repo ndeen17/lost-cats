@@ -98,7 +98,7 @@ const LeaderboardPage = () => {
                         fontWeight: 'bold',
                     }}>
                         {currentUserRank !== null
-                            ? `Meow! You are ranked #${currentUserRank} with ${currentUserScore} CTS`
+                            ? `Meow! You are ranked #${currentUserRank} with ${currentUserScore} NDT`
                             : 'Loading...'}
                     </div>
 

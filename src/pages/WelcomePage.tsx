@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import logo from '../assets/Non.png';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import logo from '../assets/Non.png';
 
 const WelcomePage = () => {
     const [username, setUsername] = useState('');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    // Check for existing username in local storage on component mount
+    // Get inviter's username from the query parameter
+    const queryParams = new URLSearchParams(location.search);
+    const inviter = queryParams.get('inviter');
+
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         if (storedUsername) {
-            navigate('/dashboard'); // Redirect to dashboard if user is already signed in
+            navigate('/dashboard'); // Redirect to dashboard if already signed in
         }
     }, [navigate]);
 
@@ -23,12 +27,11 @@ const WelcomePage = () => {
         }
 
         try {
-            // Removed the check for duplicates/reserved usernames
-            // Call the backend to save user info
-            await axios.post(`${import.meta.env.VITE_API_URL}/users`, { userName: username }); // Changed 'username' to 'userName'
-            // Store the username in local storage
+            await axios.post(`${import.meta.env.VITE_API_URL}/users`, {
+                userName: username,
+                inviter // Include inviter's username in the request
+            });
             localStorage.setItem('username', username);
-            // Navigate to dashboard
             navigate('/dashboard');
         } catch (err) {
             setError("Failed to sign in. Try again.");
