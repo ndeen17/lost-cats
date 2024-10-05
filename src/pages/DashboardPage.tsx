@@ -7,37 +7,43 @@ const Dashboard = () => {
     const [ctsBalance, setCtsBalance] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const fetchUserData = async () => {
         const storedUsername = localStorage.getItem('username');
-        const storedCtsBalance = localStorage.getItem('ctsBalance');
+        if (storedUsername) {
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
+                setUsername(res.data.userName);
+                setCtsBalance(res.data.ctsBalance);
 
-        // Use stored data if available
-        if (storedUsername && storedCtsBalance) {
-            setUsername(storedUsername);
-            setCtsBalance(parseFloat(storedCtsBalance));
-        } else {
-            // Fetch data if not in local storage
-            const fetchUserData = async () => {
-                if (storedUsername) {
-                    try {
-                        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
-                        setUsername(res.data.userName);
-                        setCtsBalance(res.data.ctsBalance);
-
-                        // Store the data in local storage
-                        localStorage.setItem('username', res.data.userName);
-                        localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
-                    } catch (error) {
-                        console.error("Error fetching user data:", error);
-                        setError("Failed to load user data.");
-                    }
+                // Store the data in local storage
+                localStorage.setItem('username', res.data.userName);
+                
+                // Check if ctsBalance is defined before saving
+                if (res.data.ctsBalance !== undefined) {
+                    localStorage.setItem('ctsBalance', res.data.ctsBalance.toString());
                 } else {
-                    setError("No username found in local storage.");
+                    console.error("ctsBalance is undefined");
                 }
-            };
-
-            fetchUserData(); // Fetch user data if not found in local storage
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setError("Failed to load user data.");
+            }
+        } else {
+            setError("No username found in local storage.");
         }
+    };
+
+    useEffect(() => {
+        // Fetch user data when the component mounts
+        fetchUserData();
+
+        // Set an interval to refetch user data every 60 seconds
+        const intervalId = setInterval(() => {
+            fetchUserData();
+        }, 60000); // 60000 milliseconds = 60 seconds
+
+        // Clear the interval on component unmount
+        return () => clearInterval(intervalId);
     }, []);
 
     return (
