@@ -1,36 +1,37 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import logo from '../assets/Non.png';
 
-const WelcomePage = () => {
+const InviteeSignUpPage = () => {
     const [username, setUsername] = useState('');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    useEffect(() => {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            navigate('/dashboard'); // Redirect to dashboard if already signed in
-        }
-    }, [navigate]);
+    // Get invite code from the URL
+    const queryParams = new URLSearchParams(location.search);
+    const inviteCode = queryParams.get('inviteCode');
 
-    const handleSignIn = async () => {
+    const handleSignUp = async () => {
         if (!username) {
             setError("Username cannot be empty");
             return;
         }
 
+        if (!inviteCode) {
+            setError("Invite code is missing");
+            return;
+        }
+
         try {
-            // Only sending userName now
-            await axios.post(`${import.meta.env.VITE_API_URL}/users`, {
-                userName: username 
+            await axios.post(`${import.meta.env.VITE_API_URL}/invite/accept-invite/${inviteCode}`, {
+                userName: username
             });
             localStorage.setItem('username', username);
             navigate('/dashboard');
         } catch (err) {
-            console.error("Error during sign-in:", err); // Log the error for debugging
-            setError("Failed to sign in. Try again.");
+            setError("Failed to sign up. Try again.");
         }
     };
 
@@ -56,7 +57,7 @@ const WelcomePage = () => {
                 style={{ padding: '10px', margin: '10px 0', borderRadius: '5px' }}
             />
             {error && <div style={{ color: 'red' }}>{error}</div>}
-            <button onClick={handleSignIn} style={{
+            <button onClick={handleSignUp} style={{
                 color: '#fff',
                 backgroundColor: '#00f',
                 padding: '10px 20px',
@@ -65,10 +66,10 @@ const WelcomePage = () => {
                 cursor: 'pointer',
                 transition: 'background-color 0.3s',
             }}>
-                Sign In
+                Sign Up
             </button>
         </div>
     );
 };
 
-export default WelcomePage;
+export default InviteeSignUpPage;

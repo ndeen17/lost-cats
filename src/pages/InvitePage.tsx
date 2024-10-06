@@ -7,10 +7,11 @@ const InvitePage: React.FC = () => {
     const [inviteLink, setInviteLink] = useState('');
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch invite data (invited friends count, total CTS earned)
     useEffect(() => {
         const fetchInviteData = async () => {
             try {
-                const response = await fetch('/api/invite-data'); // Update with your API endpoint
+                const response = await fetch('/invite-data'); // Replace with correct API endpoint
                 const data = await response.json();
                 if (response.ok) {
                     setInviteCount(data.inviteCount);
@@ -27,13 +28,14 @@ const InvitePage: React.FC = () => {
         fetchInviteData();
     }, []);
 
+    // Generate invite link for the inviter
     const generateInviteLink = async () => {
         try {
-            const response = await fetch('/api/generate-invite-link', { method: 'POST' });
+            const response = await fetch('/generate-invite-link', { method: 'POST' });
             const data = await response.json();
             if (response.ok) {
-                setInviteLink(data.inviteLink);
-                setError(null); // Clear any previous errors
+                setInviteLink(data.inviteLink);  // Invite link is returned from the backend
+                setError(null); // Clear previous errors
             } else {
                 setError(data.message || "Failed to generate invite link.");
             }

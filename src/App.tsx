@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import TasksPage from './pages/TasksPage';
 import InvitePage from './pages/InvitePage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import InviteeSignUpPage from './pages/InviteeSignUpPage';
 
 // Import icons from react-icons
 import { FaHome, FaDollarSign, FaUserPlus, FaTrophy } from 'react-icons/fa';
@@ -105,6 +106,7 @@ const App = () => {
                  <Route path="/tasks" element={<TasksPage onTaskComplete={handleTaskComplete} />} />
                 <Route path="/invite" element={<InvitePage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/invitee-signup" element={<InviteeSignUpPage />} />
             </Routes>
 
             <Footer /> {/* Render Footer component */}
