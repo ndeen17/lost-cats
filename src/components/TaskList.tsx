@@ -137,7 +137,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                     zIndex: 1000,
                 }}>
                     <div style={{
-                        backgroundColor: '#fff',
+                        backgroundColor: '#7d0000',
                         padding: '20px',
                         borderRadius: '10px',
                         textAlign: 'center',
