@@ -94,7 +94,7 @@ const Footer = () => {
 const App = () => {
 
     // Define the onTaskComplete handler
-    const handleTaskComplete = (taskId: number) => {
+    const handleTaskComplete = (taskId: string) => {
         console.log(`Task ${taskId} completed`);
     };
 
