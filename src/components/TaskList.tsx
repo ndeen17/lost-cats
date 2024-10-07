@@ -3,40 +3,42 @@ import axios from 'axios';
 
 // Define Task interface to ensure type safety
 interface Task {
-    id: number;
+    id: string; // Change id type to string
     task: string;
     reward: number;
     url?: string;
 }
 
-const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void }) => {
-    const tasks: Task[] = [
-        { id: 1, task: 'Join our Telegram group', reward: 500, url: 'https://telegram.org' },
-        { id: 2, task: 'Follow us on Twitter', reward: 600, url: 'https://twitter.com' },
-        // Additional tasks can be added here
-    ];
+const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void }) => { // Change onTaskComplete type
+    const [tasks, setTasks] = useState<Task[]>([]); // State to hold tasks fetched from the backend
+    const [completedTasks, setCompletedTasks] = useState<string[]>([]); // Store completed task IDs as strings
+    const [showWarning, setShowWarning] = useState(false); // Toggle for showing modal
+    const [currentTask, setCurrentTask] = useState<{ id: string, reward: number, url?: string } | null>(null); // Store task data
 
-    const [completedTasks, setCompletedTasks] = useState<number[]>([]); // Store completed task IDs
+    // Fetch tasks from backend on component mount
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`);
+                setTasks(response.data); // Assuming the response data is an array of tasks
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
+    }, []);
 
     // Add logging to confirm the API URL
     useEffect(() => {
         console.log('API URL:', import.meta.env.VITE_API_URL);
     }, []);
 
-    // Handle task completion
-    const handleCompleteTask = async (taskId: number, reward: number, url?: string) => {
-        const isConfirmed = window.confirm("Are you sure you completed the task?");
-        if (!isConfirmed) return;
+    // Handle task completion after modal confirmation
+    const handleCompleteTask = async () => {
+        if (!currentTask) return;
 
-        const taskClicked = url ? window.confirm("Did you click the link to complete the task?") : true;
-        if (!taskClicked) {
-            alert("You need to click the link to receive CTS.");
-            return;
-        }
-
-        if (url) {
-            window.open(url, "_blank");
-        }
+        const { id, reward } = currentTask;
 
         try {
             // Get username from local storage
@@ -47,20 +49,31 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
             }
 
             // Notify the backend about task completion
-            await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${taskId}`, { userName });
+            await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${id}`, { userName });
 
             // Update completed tasks list
-            setCompletedTasks([...completedTasks, taskId]);
+            setCompletedTasks([...completedTasks, id]);
 
             // Update the CTS balance for the user
             const currentBalance = parseInt(localStorage.getItem('ctsBalance') || '0', 10);
-            localStorage.setItem('ctsBalance', (currentBalance + reward).toString());
+            const newBalance = currentBalance + reward; // Update the balance with reward
+            localStorage.setItem('ctsBalance', newBalance.toString());
 
             // Notify parent component (if necessary)
-            onTaskComplete(taskId);
+            onTaskComplete(id); // Pass id as a string
         } catch (error) {
             console.error("Error completing task:", error);
         }
+
+        // Close the modal
+        setShowWarning(false);
+        setCurrentTask(null);
+    };
+
+    // Open modal and set the current task
+    const handleOpenWarning = (taskId: string, reward: number, url?: string) => { // Change taskId type to string
+        setCurrentTask({ id: taskId, reward, url });
+        setShowWarning(true);
     };
 
     return (
@@ -90,7 +103,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
                                 )}
                             </span>
                             <button
-                                onClick={() => handleCompleteTask(task.id, task.reward, task.url)}
+                                onClick={() => handleOpenWarning(task.id, task.reward, task.url)} // Pass task.id as string
                                 style={{
                                     padding: '8px 15px',
                                     borderRadius: '5px',
@@ -106,7 +119,63 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: number) => void
                         </div>
                     ))
             ) : (
-                <p>No tasks available</p> 
+                <p>No tasks available</p>
+            )}
+
+            {/* Modal for warning */}
+            {showWarning && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000,
+                }}>
+                    <div style={{
+                        backgroundColor: '#fff',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        maxWidth: '400px',
+                        width: '100%',
+                    }}>
+                        <h3>Warning</h3>
+                        <p>Hey! If you cheat, your account would be deleted.</p>
+                        <button
+                            onClick={handleCompleteTask}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#000',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                marginRight: '10px',
+                            }}
+                        >
+                            Proceed
+                        </button>
+                        <button
+                            onClick={() => setShowWarning(false)}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#fff',
+                                color: '#000',
+                                border: '1px solid #000',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );

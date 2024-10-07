@@ -22,10 +22,13 @@ const WelcomePage = () => {
         }
 
         try {
-            // Only sending userName now
+            // Log the username being sent
+            console.log("Username being sent:", username);
+
             await axios.post(`${import.meta.env.VITE_API_URL}/users`, {
-                userName: username 
+                userName: username
             });
+
             localStorage.setItem('username', username);
             navigate('/dashboard');
         } catch (err) {

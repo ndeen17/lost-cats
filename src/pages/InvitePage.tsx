@@ -11,7 +11,7 @@ const InvitePage: React.FC = () => {
     useEffect(() => {
         const fetchInviteData = async () => {
             try {
-                const response = await fetch('/invite-data'); // Replace with correct API endpoint
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/invite-data`);  // Use the backend URL from .env
                 const data = await response.json();
                 if (response.ok) {
                     setInviteCount(data.inviteCount);
@@ -31,7 +31,7 @@ const InvitePage: React.FC = () => {
     // Generate invite link for the inviter
     const generateInviteLink = async () => {
         try {
-            const response = await fetch('/generate-invite-link', { method: 'POST' });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/generate-invite-link`, { method: 'POST' });  // Use the backend URL from .env
             const data = await response.json();
             if (response.ok) {
                 setInviteLink(data.inviteLink);  // Invite link is returned from the backend
