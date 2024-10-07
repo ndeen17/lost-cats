@@ -3,7 +3,7 @@ import React from 'react';
 import TaskList from '../components/TaskList';
 
 interface TasksPageProps {
-  onTaskComplete: (taskId: number) => void;
+  onTaskComplete: (taskId: string) => void;
 }
 
 const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
