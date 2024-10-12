@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import logo from '../assets/Non.png';
+import { useNavigate } from 'react-router-dom';
 
 const InvitePage: React.FC = () => {
     const [userName, setUserName] = useState<string | null>(null);
@@ -7,19 +9,55 @@ const InvitePage: React.FC = () => {
     const [totalCTS, setTotalCTS] = useState(0);
     const [inviteLink, setInviteLink] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    // Set the current user (for development purposes)
+    const fetchUserData = async () => {
+        const storedUsername = localStorage.getItem('username');
+
+        if (storedUsername) {
+            try {
+                const checkRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/check/${storedUsername}`);
+
+                if (!checkRes.data.exists) {
+                    navigate('/'); // Redirect to the welcome page
+                    return;
+                }
+
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${storedUsername}`);
+                setUserName(res.data.userName);
+
+                localStorage.setItem('username', res.data.userName);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setError("Failed to load user data.");
+            }
+        } else {
+            setError("No username found in local storage.");
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    // Set the current user
     useEffect(() => {
         const setCurrentUser = async () => {
+            if (!userName) {
+                setError("User name is not available.");
+                return;
+            }
             try {
+                console.log("Setting current user with userName:", userName); // Log the userName being set
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/users/set-current-user`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ userName }) // Replace with the actual current username
+                    body: JSON.stringify({ userName })
                 });
                 const data = await response.json();
+                console.log("Set current user response:", data); // Log the response from setting current user
                 if (!response.ok) {
                     setError(data.message || "Failed to set current user.");
                 } else {
@@ -31,28 +69,10 @@ const InvitePage: React.FC = () => {
             }
         };
 
-        setCurrentUser();
-    }, []);
-
-    // Fetch the current user from the backend
-    useEffect(() => {
-        const fetchUserName = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/users/current`);
-                const data = await response.json();
-                if (response.ok) {
-                    setUserName(data.userName);
-                } else {
-                    setError(data.message || "Failed to load user data.");
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setError("Unable to fetch user data.");
-            }
-        };
-
-        fetchUserName();
-    }, []);
+        if (userName) {
+            setCurrentUser();
+        }
+    }, [userName]);
 
     // Fetch invite data (invited friends count, total CTS earned)
     useEffect(() => {
@@ -63,8 +83,10 @@ const InvitePage: React.FC = () => {
             }
 
             try {
+                console.log("Fetching invite data for userName:", userName); // Log the userName for fetching invite data
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/invite-data/${userName}`);
                 const data = await response.json();
+                console.log("Fetched invite data:", data); // Log the fetched invite data
                 if (response.ok) {
                     setInviteCount(data.inviteCount);
                     setTotalCTS(data.ctsEarned);
@@ -82,8 +104,8 @@ const InvitePage: React.FC = () => {
         }
     }, [userName]);
 
-    // Generate invite link for the inviter
-    const generateInviteLink = async () => {
+     // Generate invite link for the inviter
+     const generateInviteLink = async () => {
         if (!userName) {
             setError("User name is not available.");
             return;
