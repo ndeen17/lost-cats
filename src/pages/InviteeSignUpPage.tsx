@@ -48,7 +48,7 @@ const InviteeSignUpPage = () => {
             textAlign: 'center'
         }}>
             <img src={logo} alt="logo" style={{ maxWidth: '200px', height: 'auto' }} />
-            <h1>Welcome to the Game!</h1>
+            <h1>Hello, Welcome to the Game!</h1>
             <input
                 type="text"
                 placeholder="Enter your username"
