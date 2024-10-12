@@ -2,16 +2,68 @@ import React, { useEffect, useState } from 'react';
 import logo from '../assets/Non.png';
 
 const InvitePage: React.FC = () => {
+    const [userName, setUserName] = useState<string | null>(null);
     const [inviteCount, setInviteCount] = useState(0);
     const [totalCTS, setTotalCTS] = useState(0);
     const [inviteLink, setInviteLink] = useState('');
     const [error, setError] = useState<string | null>(null);
 
+    // Set the current user (for development purposes)
+    useEffect(() => {
+        const setCurrentUser = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/users/set-current-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userName }) // Replace with the actual current username
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    setError(data.message || "Failed to set current user.");
+                } else {
+                    console.log("Current user set successfully:", data.message);
+                }
+            } catch (error) {
+                console.error("Error setting current user:", error);
+                setError("Unable to set current user.");
+            }
+        };
+
+        setCurrentUser();
+    }, []);
+
+    // Fetch the current user from the backend
+    useEffect(() => {
+        const fetchUserName = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/users/current`);
+                const data = await response.json();
+                if (response.ok) {
+                    setUserName(data.userName);
+                } else {
+                    setError(data.message || "Failed to load user data.");
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setError("Unable to fetch user data.");
+            }
+        };
+
+        fetchUserName();
+    }, []);
+
     // Fetch invite data (invited friends count, total CTS earned)
     useEffect(() => {
         const fetchInviteData = async () => {
+            if (!userName) {
+                setError("User name is not available.");
+                return;
+            }
+
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/invite-data`);  // Use the backend URL from .env
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/invite-data/${userName}`);
                 const data = await response.json();
                 if (response.ok) {
                     setInviteCount(data.inviteCount);
@@ -25,17 +77,28 @@ const InvitePage: React.FC = () => {
             }
         };
 
-        fetchInviteData();
-    }, []);
+        if (userName) {
+            fetchInviteData();
+        }
+    }, [userName]);
 
     // Generate invite link for the inviter
     const generateInviteLink = async () => {
+        if (!userName) {
+            setError("User name is not available.");
+            return;
+        }
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/generate-invite-link`, { method: 'POST' });  // Use the backend URL from .env
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/invite/generate-invite-link`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userName })
+            });
             const data = await response.json();
             if (response.ok) {
-                setInviteLink(data.inviteLink);  // Invite link is returned from the backend
-                setError(null); // Clear previous errors
+                setInviteLink(data.inviteLink);
             } else {
                 setError(data.message || "Failed to generate invite link.");
             }
