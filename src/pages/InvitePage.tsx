@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const InvitePage: React.FC = () => {
     const [userName, setUserName] = useState<string | null>(null);
-    const [inviteCount, setInviteCount] = useState(0);
+    const [invitedFriends, setInvitedFriends] = useState<string[]>([]);
     const [totalCTS, setTotalCTS] = useState(0);
     const [inviteLink, setInviteLink] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -74,7 +74,7 @@ const InvitePage: React.FC = () => {
         }
     }, [userName]);
 
-    // Fetch invite data (invited friends count, total CTS earned)
+    // Fetch invite data (invited friends, total CTS earned)
     useEffect(() => {
         const fetchInviteData = async () => {
             if (!userName) {
@@ -88,8 +88,8 @@ const InvitePage: React.FC = () => {
                 const data = await response.json();
                 console.log("Fetched invite data:", data); // Log the fetched invite data
                 if (response.ok) {
-                    setInviteCount(data.inviteCount);
-                    setTotalCTS(data.ctsEarned);
+                    setInvitedFriends(data.invitedFriends);
+                    setTotalCTS(data.totalCTS);
                 } else {
                     setError(data.message || "Failed to load invite data.");
                 }
@@ -139,11 +139,11 @@ const InvitePage: React.FC = () => {
         <div style={styles.container}>
             <img src={logo} alt="Logo" style={styles.logo} />
             <h2 style={styles.title}>Invite Friends to Get More NDT</h2>
-            <h3>Total Friends Invited: <span style={styles.highlight}>{inviteCount}</span></h3>
             <h3>Total NDT Earned: <span style={styles.highlight}>{totalCTS}</span></h3>
-
+            <h3>Total Friends Invited: <span style={styles.highlight}>{invitedFriends.length}</span></h3>
+    
             <div style={styles.inviteSection}>
-                {inviteCount === 0 ? (
+                {invitedFriends.length === 0 ? (
                     <>
                         <button onClick={generateInviteLink} style={styles.button}>
                             Generate Invite Link
@@ -159,71 +159,89 @@ const InvitePage: React.FC = () => {
                         )}
                     </>
                 ) : (
-                    <button onClick={generateInviteLink} style={styles.button}>
-                        Invite More Friends
-                    </button>
+                    <>
+                        <button onClick={generateInviteLink} style={styles.button}>
+                            Invite More Friends
+                        </button>
+                        <div style={styles.friendsList}>
+                            <h3>Invited Friends:</h3>
+                            <ul>
+                                {invitedFriends.map((friend, index) => (
+                                    <li key={index} style={styles.friendItem}>{friend}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </>
                 )}
             </div>
-
+    
             {error && <p style={styles.error}>{error}</p>}
         </div>
     );
-};
-
-// Define styles as a constant object
-const styles = {
-    container: {
-        padding: '20px',
-        textAlign: 'center' as 'center', // Explicit type for textAlign
-        minHeight: '100vh',
-    } as React.CSSProperties,
-    logo: {
-        margin: '20px',
-        width: '150px',
-    } as React.CSSProperties,
-    title: {
-        fontWeight: 'bold',
-        margin: '20px 0',
-    } as React.CSSProperties,
-    highlight: {
-        fontWeight: 'bold',
-        color: '#00f',
-    } as React.CSSProperties,
-    inviteSection: {
-        marginTop: '30px',
-    } as React.CSSProperties,
-    button: {
-        padding: '10px 20px',
-        borderRadius: '5px',
-        backgroundColor: '#000',
-        color: '#fff',
-        cursor: 'pointer',
-        border: 'none',
-        margin: '10px 0',
-    } as React.CSSProperties,
-    linkContainer: {
-        marginTop: '20px',
-    } as React.CSSProperties,
-    linkInput: {
-        width: '100%',
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-        marginTop: '10px',
-    } as React.CSSProperties,
-    copyButton: {
-        marginTop: '10px',
-        padding: '10px 20px',
-        borderRadius: '5px',
-        backgroundColor: '#000',
-        color: '#fff',
-        cursor: 'pointer',
-        border: 'none',
-    } as React.CSSProperties,
-    error: {
-        color: 'red',
-        marginTop: '10px',
-    } as React.CSSProperties,
-};
-
-export default InvitePage;
+    };
+    
+    // Define styles as a constant object
+    const styles = {
+        container: {
+            padding: '20px',
+            textAlign: 'center' as 'center', // Explicit type for textAlign
+            minHeight: '100vh',
+        } as React.CSSProperties,
+        logo: {
+            margin: '20px',
+            width: '150px',
+        } as React.CSSProperties,
+        title: {
+            fontWeight: 'bold',
+            margin: '20px 0',
+        } as React.CSSProperties,
+        highlight: {
+            fontWeight: 'bold',
+            color: '#00f',
+        } as React.CSSProperties,
+        inviteSection: {
+            marginTop: '30px',
+        } as React.CSSProperties,
+        button: {
+            padding: '10px 20px',
+            borderRadius: '5px',
+            backgroundColor: '#000',
+            color: '#fff',
+            cursor: 'pointer',
+            border: 'none',
+            margin: '10px 0',
+        } as React.CSSProperties,
+        linkContainer: {
+            marginTop: '20px',
+        } as React.CSSProperties,
+        linkInput: {
+            width: '100%',
+            padding: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            marginTop: '10px',
+        } as React.CSSProperties,
+        copyButton: {
+            marginTop: '10px',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            backgroundColor: '#000',
+            color: '#fff',
+            cursor: 'pointer',
+            border: 'none',
+        } as React.CSSProperties,
+        friendsList: {
+            marginTop: '20px',
+            textAlign: 'left' as 'left',
+        } as React.CSSProperties,
+        friendItem: {
+            listStyleType: 'none',
+            padding: '5px 0',
+        } as React.CSSProperties,
+        error: {
+            color: 'red',
+            marginTop: '10px',
+        } as React.CSSProperties,
+    };
+    
+    export default InvitePage;

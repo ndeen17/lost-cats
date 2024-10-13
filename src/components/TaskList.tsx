@@ -19,19 +19,33 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`);
-                setTasks(response.data); // Assuming the response data is an array of tasks
+                const userName = localStorage.getItem('username');
+                if (!userName) {
+                    alert("User not found. Please sign in again.");
+                    return;
+                }
+
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`, {
+                    params: { userName }
+                });
+
+                const fetchedTasks: Task[] = response.data;
+
+                // Fetch completed tasks from backend
+                const completedResponse = await axios.get(`${import.meta.env.VITE_API_URL}/tasks/completed`, {
+                    params: { userName }
+                });
+
+                const fetchedCompletedTasks: Task[] = completedResponse.data;
+
+                setTasks(fetchedTasks);
+                setCompletedTasks(fetchedCompletedTasks.map(task => task.id));
             } catch (error) {
-                console.error("Error fetching tasks:", error);
+                console.error('Error fetching tasks:', error);
             }
         };
 
         fetchTasks();
-    }, []);
-
-    // Add logging to confirm the API URL
-    useEffect(() => {
-        console.log('API URL:', import.meta.env.VITE_API_URL);
     }, []);
 
     // Handle task completion after modal confirmation
@@ -78,7 +92,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
 
     return (
         <div style={{ marginTop: '20px' }}>
-            {/* Display the tasks if available */}
+            <h2>Tasks</h2>
             {tasks.length > 0 ? (
                 tasks
                     .filter(task => !completedTasks.includes(task.id)) // Exclude completed tasks
@@ -122,7 +136,31 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                 <p>No tasks available</p>
             )}
 
-            {/* Modal for warning */}
+            <h2>Completed Tasks</h2>
+            {completedTasks.length > 0 ? (
+                completedTasks.map(taskId => {
+                    const task = tasks.find(t => t.id === taskId);
+                    return task ? (
+                        <div key={task.id} style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '15px 20px',
+                            margin: '10px 0',
+                            borderRadius: '10px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                            backgroundColor: '#000',
+                        }}>
+                            <span style={{ flex: 1, color: '#fff' }}>
+                                {task.task}
+                            </span>
+                        </div>
+                    ) : null;
+                })
+            ) : (
+                <p>No completed tasks</p>
+            )}
+
             {showWarning && (
                 <div style={{
                     position: 'fixed',
@@ -146,7 +184,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                         width: '100%',
                     }}>
                         <h3>Warning</h3>
-                        <p>Hey! If you cheat, your account would be deleted.</p>
+                        <p>Make sure Tasks are done properly!.</p>
                         <button
                             onClick={handleCompleteTask}
                             style={{

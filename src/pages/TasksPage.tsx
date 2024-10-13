@@ -20,7 +20,7 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
         border: '1px solid #f5c6cb',
         textAlign: 'center',
       }}>
-        Hey! If tasks are not done properly, your account will be deleted.
+        Hey! the more task you complete, the more $NDT you will earn.
       </div>
       <TaskList onTaskComplete={onTaskComplete} />
     </div>
