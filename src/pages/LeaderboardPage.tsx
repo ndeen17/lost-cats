@@ -121,7 +121,7 @@ const LeaderboardPage = () => {
                                 <tr style={{ backgroundColor: '#007bff', color: '#fff' }}>
                                     <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Rank</th>
                                     <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>User</th>
-                                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>CTS</th>
+                                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>NDT</th>
                                 </tr>
                             </thead>
                             <tbody>

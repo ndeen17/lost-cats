@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import logo from '../assets/Non.png';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const InvitePage: React.FC = () => {
     const [userName, setUserName] = useState<string | null>(null);
@@ -107,7 +109,7 @@ const InvitePage: React.FC = () => {
      // Generate invite link for the inviter
      const generateInviteLink = async () => {
         if (!userName) {
-            setError("User name is not available.");
+            setError("Try Again");
             return;
         }
         try {
@@ -132,7 +134,7 @@ const InvitePage: React.FC = () => {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(inviteLink);
-        alert("Invite link copied to clipboard!");
+        toast.success("Invite link copied to clipboard!");
     };
 
     return (
@@ -176,6 +178,7 @@ const InvitePage: React.FC = () => {
             </div>
     
             {error && <p style={styles.error}>{error}</p>}
+            <ToastContainer />
         </div>
     );
     };
