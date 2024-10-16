@@ -114,7 +114,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                 fontSize: '14px',
               }}
             >
-              Completed 
+              Claim
             </button>
           </div>
         ))
@@ -162,7 +162,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
             borderRadius: '10px',
             textAlign: 'center',
           }}>
-            <p>Only click completed after task has been done!</p>
+            <p>Only click Claim after task has been done!</p>
             <button onClick={handleCompleteTask} style={{
               padding: '8px 15px',
               borderRadius: '5px',
