@@ -91,25 +91,34 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             backgroundColor: '#000',
           }}>
-            <span style={{ flex: 1 }}>{task.task}</span>
+            <a href={task.url} target="_blank" rel="noopener noreferrer" style={{ 
+                flex: 1, color: '#fff', 
+                textDecoration: 'none',
+                padding: '8px 15px',
+                borderRadius: '5px',
+                backgroundColor: '#7d0000',
+                display: 'block',
+                 marginRight: '10px',}}>
+              {task.task}
+            </a>
             <button
               onClick={() => handleOpenWarning(task)}
               style={{
                 padding: '8px 15px',
                 borderRadius: '5px',
-                backgroundColor: '#000',
+                backgroundColor: '#7d0000',
                 color: '#fff',
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '14px',
               }}
             >
-              Complete + {task.reward} CTS
+              Complete + {task.reward} NDT
             </button>
           </div>
         ))
       ) : (
-        <p>No tasks available</p>
+        <p>More tasks coming soon</p>
       )}
 
       <h2>Completed Tasks</h2>
@@ -126,7 +135,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
             backgroundColor: '#000',
           }}>
             <span style={{ flex: 1 }}>{task.task}</span>
-            <span>{task.reward} CTS</span>
+            <span>{task.reward} NDT</span>
           </div>
         ))
       ) : (
@@ -147,12 +156,12 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
           zIndex: 1000,
         }}>
           <div style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#7d0000',
             padding: '20px',
             borderRadius: '10px',
             textAlign: 'center',
           }}>
-            <p>Are you sure you want to complete this task?</p>
+            <p>Only click completed after task has been done!</p>
             <button onClick={handleCompleteTask} style={{
               padding: '8px 15px',
               borderRadius: '5px',
