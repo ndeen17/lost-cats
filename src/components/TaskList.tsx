@@ -97,23 +97,24 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                 padding: '8px 15px',
                 borderRadius: '5px',
                 backgroundColor: '#7d0000',
-                display: 'block',
                  marginRight: '10px',}}>
               {task.task}
+              + {task.reward} NDT
             </a>
+           
             <button
               onClick={() => handleOpenWarning(task)}
               style={{
                 padding: '8px 15px',
                 borderRadius: '5px',
-                backgroundColor: '#7d0000',
+                backgroundColor: '#000',
                 color: '#fff',
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '14px',
               }}
             >
-              Complete + {task.reward} NDT
+              Completed 
             </button>
           </div>
         ))
