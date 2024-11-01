@@ -37,10 +37,8 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
     fetchTasks();
   }, []);
 
-  const handleCompleteTask = async () => {
-    if (!currentTask) return;
-
-    const { _id, reward } = currentTask;
+  const handleCompleteTask = async (task: Task) => {
+    const { _id, reward } = task;
 
     try {
       const userName = localStorage.getItem('username');
@@ -51,8 +49,8 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
 
       await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${_id}`, { userName });
 
-      setCompletedTasks([...completedTasks, currentTask]);
-      setTasks(tasks.filter(task => task._id !== _id));
+      setCompletedTasks([...completedTasks, task]);
+      setTasks(tasks.filter(t => t._id !== _id));
 
       const currentBalance = parseInt(localStorage.getItem('ctsBalance') || '0', 10);
       const newBalance = currentBalance + reward;
@@ -62,18 +60,26 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
     } catch (error) {
       console.error("Error completing task:", error);
     }
-
-    setShowWarning(false);
-    setCurrentTask(null);
   };
 
-  const handleOpenWarning = (task: Task) => {
+  const handleTaskClick = (task: Task) => {
     if (completedTasks.some(t => t._id === task._id)) {
       alert("Task has already been completed.");
       return;
     }
+
     setCurrentTask(task);
     setShowWarning(true);
+
+    // Open the task URL in a new tab
+    window.open(task.url, '_blank');
+
+    // Start a timer to complete the task after 30 seconds
+    setTimeout(() => {
+      handleCompleteTask(task);
+      setShowWarning(false);
+      setCurrentTask(null);
+    }, 5000); // 5000 milliseconds = 5 seconds
   };
 
   return (
@@ -97,25 +103,11 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
                 padding: '8px 15px',
                 borderRadius: '5px',
                 backgroundColor: '#7d0000',
-                 marginRight: '10px',}}>
+                 marginRight: '10px',}}
+                 onClick={() => handleTaskClick(task)}>
               {task.task}
               + {task.reward} NDT
             </a>
-           
-            <button
-              onClick={() => handleOpenWarning(task)}
-              style={{
-                padding: '8px 15px',
-                borderRadius: '5px',
-                backgroundColor: '#000',
-                color: '#fff',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              Claim
-            </button>
           </div>
         ))
       ) : (
@@ -162,19 +154,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
             borderRadius: '10px',
             textAlign: 'center',
           }}>
-            <p>Only click Claim after task has been done!</p>
-            <button onClick={handleCompleteTask} style={{
-              padding: '8px 15px',
-              borderRadius: '5px',
-              backgroundColor: '#000',
-              color: '#fff',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px',
-              marginRight: '10px',
-            }}>
-              Proceed
-            </button>
+            <p>Make sure tasks are done properly!</p>
             <button onClick={() => setShowWarning(false)} style={{
               padding: '8px 15px',
               borderRadius: '5px',

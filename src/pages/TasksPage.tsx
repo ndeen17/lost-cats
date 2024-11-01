@@ -9,7 +9,7 @@ interface TasksPageProps {
 const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Click the links, Complete Tasks to Earn NDT</h2>
+      <h2>Complete Tasks to Earn NDT</h2>
       {/* Display message */}
       <div style={{
         marginBottom: '20px',
@@ -26,5 +26,6 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
     </div>
   );
 };
+
 
 export default TasksPage;
