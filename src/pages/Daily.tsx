@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 const Daily = () => {
-    const [reward, setReward] = useState<number | null>(null);
+    const [, setReward] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
 
 
