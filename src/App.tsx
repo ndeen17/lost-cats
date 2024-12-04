@@ -6,6 +6,7 @@ import TasksPage from './pages/TasksPage';
 import InvitePage from './pages/InvitePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import InviteeSignUpPage from './pages/InviteeSignUpPage';
+import Daily from './pages/Daily';
 
 // Import icons from react-icons
 import { FaHome, FaDollarSign, FaUserPlus, FaTrophy } from 'react-icons/fa';
@@ -107,6 +108,7 @@ const App = () => {
                 <Route path="/invite" element={<InvitePage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/invitee-signup" element={<InviteeSignUpPage />} />
+                <Route path="/daily-reward" element={<Daily />} />
             </Routes>
 
             <Footer /> {/* Render Footer component */}

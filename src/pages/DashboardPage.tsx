@@ -59,7 +59,7 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div style={{ padding: '20px', backgroundColor: '#7d0000', color: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ padding: '20px', background: 'radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%)', color: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <div style={{ marginBottom: '20px' }}>
                 <img src={logo} alt="logo" style={{ minWidth: '100px', maxWidth: '200px', height: 'auto' }} />
             </div>
@@ -75,13 +75,52 @@ const Dashboard = () => {
                 <div style={{ color: 'red', fontSize: '3vw' }}>{error}</div>
             )}
             <div style={{ marginTop: '40px' }}>
+            <a
+      href="/daily-reward"
+      style={{
+        color: "#aaf0ff", // Light blue text
+        fontSize: "4vw", // Scalable font size
+        textDecoration: "none", // No underline
+        transition: "background-color 0.3s, transform 0.3s", // Smooth transitions
+        display: "flex", // Flex for alignment
+        justifyContent: "center", // Center text horizontally
+        alignItems: "center", // Center text vertically
+        padding: "15px 30px", // Button padding
+        backgroundColor: "#440000", // Dark red background
+        borderRadius: "50px", // Fully rounded corners
+        border: "2px solid #aaf0ff", // Light blue border
+        width: "fit-content", // Adjust to content size
+        margin: "20px auto", // Center horizontally with margin
+        cursor: "pointer",
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.backgroundColor = "#aaf0ff"; // Light blue background
+        e.currentTarget.style.color = "#440000"; // Dark red text
+        e.currentTarget.style.transform = "scale(1.05)"; // Slight scaling
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.backgroundColor = "#440000"; // Reset to original
+        e.currentTarget.style.color = "#aaf0ff"; // Reset text color
+        e.currentTarget.style.transform = "scale(1)"; // Reset scale
+      }}
+    >
+      DAILY REWARD
+      <span
+        style={{
+          marginLeft: "10px", // Spacing between text and icon
+          display: "inline-block",
+          transform: "rotate(45deg)", // Rotate for star shape
+          width: "10px",
+          height: "10px",
+          backgroundColor: "#aaf0ff", // Light blue color
+          clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)", // Star shape
+        }}
+      />
+    </a>
                 <a 
                     href="/tasks" 
                     style={{
-                        color: '#fff',
-                        backgroundColor: '#00f',
-                        padding: '10px 20px',
-                        borderRadius: '5px',
+                        color: '#aaf0ff',
                         fontSize: '4vw',
                         textDecoration: 'none',
                         transition: 'background-color 0.3s',
@@ -89,7 +128,7 @@ const Dashboard = () => {
                     onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0057e7')}
                     onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00f')}
                 >
-                    View Tasks
+                   Earn With Tasks <span className="arrow">→</span>
                 </a>
             </div>
         </div>
