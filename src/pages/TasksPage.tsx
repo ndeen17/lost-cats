@@ -1,5 +1,5 @@
 // src/pages/TasksPage.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import TaskList from '../components/TaskList';
 
 interface TasksPageProps {
@@ -7,10 +7,24 @@ interface TasksPageProps {
 }
 
 const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
+  const [selectedTab, setSelectedTab] = useState('Partnership tasks');
+
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case 'Partnership tasks':
+        return <TaskList onTaskComplete={onTaskComplete} taskType="partnership" />;
+      case 'Notdust task':
+        return <TaskList onTaskComplete={onTaskComplete} taskType="notdust" />;
+      case 'Ambassadors tasks':
+        return <TaskList onTaskComplete={onTaskComplete} taskType="ambassadors" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <h2>Complete Tasks to Earn NDT</h2>
-      {/* Display message */}
       <div style={{
         marginBottom: '20px',
         padding: '10px',
@@ -22,10 +36,25 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
       }}>
         Hey! the more task you complete, the more $NDT you will earn.
       </div>
-      <TaskList onTaskComplete={onTaskComplete} />
+      <div style={{ display: 'flex', marginBottom: '20px' }}>
+        {['Partnership tasks', 'Notdust task', 'Ambassadors tasks'].map(tab => (
+          <div
+            key={tab}
+            onClick={() => setSelectedTab(tab)}
+            style={{
+              padding: '10px 20px',
+              cursor: 'pointer',
+              borderBottom: selectedTab === tab ? '2px solid #000' : 'none',
+              fontWeight: selectedTab === tab ? 'bold' : 'normal',
+            }}
+          >
+            {tab}
+          </div>
+        ))}
+      </div>
+      {renderTabContent()}
     </div>
   );
 };
-
 
 export default TasksPage;

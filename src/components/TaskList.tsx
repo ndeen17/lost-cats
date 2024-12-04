@@ -8,7 +8,12 @@ interface Task {
   url?: string;
 }
 
-const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void }) => {
+interface TaskListProps {
+  onTaskComplete: (taskId: string) => void;
+  taskType: string;
+}
+
+const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [showWarning, setShowWarning] = useState(false);
@@ -24,7 +29,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
         }
 
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`, {
-          params: { userName }
+          params: { userName, taskType }
         });
 
         setTasks(response.data.tasks);
@@ -35,7 +40,7 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
     };
 
     fetchTasks();
-  }, []);
+  }, [taskType]);
 
   const handleCompleteTask = async (task: Task) => {
     const { _id, reward } = task;
@@ -87,26 +92,38 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
       <h2>Tasks</h2>
       {tasks.length > 0 ? (
         tasks.map(task => (
-          <div key={task._id} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '15px 20px',
-            margin: '10px 0',
-            borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            backgroundColor: '#000',
-          }}>
-            <a href={task.url} target="_blank" rel="noopener noreferrer" style={{ 
-                flex: 1, color: '#fff', 
+          <div
+            key={task._id}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '15px 20px',
+              margin: '10px 0',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: '#fff',
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <a
+              href={task.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: 1,
+                color: '#000',
                 textDecoration: 'none',
                 padding: '8px 15px',
                 borderRadius: '5px',
-                backgroundColor: '#7d0000',
-                 marginRight: '10px',}}
-                 onClick={() => handleTaskClick(task)}>
-              {task.task}
-              + {task.reward} NDT
+                backgroundColor: '#f0f0f0',
+                marginRight: '10px',
+              }}
+              onClick={() => handleTaskClick(task)}
+            >
+              {task.task} + {task.reward} NDT
             </a>
           </div>
         ))
@@ -117,16 +134,19 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
       <h2>Completed Tasks</h2>
       {completedTasks.length > 0 ? (
         completedTasks.map(task => (
-          <div key={task._id} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '15px 20px',
-            margin: '10px 0',
-            borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            backgroundColor: '#000',
-          }}>
+          <div
+            key={task._id}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '15px 20px',
+              margin: '10px 0',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: '#fff',
+            }}
+          >
             <span style={{ flex: 1 }}>{task.task}</span>
             <span>{task.reward} NDT</span>
           </div>
@@ -136,34 +156,41 @@ const TaskList = ({ onTaskComplete }: { onTaskComplete: (taskId: string) => void
       )}
 
       {showWarning && currentTask && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: '#7d0000',
-            padding: '20px',
-            borderRadius: '10px',
-            textAlign: 'center',
-          }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '20px',
+              borderRadius: '10px',
+              textAlign: 'center',
+            }}
+          >
             <p>Make sure tasks are done properly!</p>
-            <button onClick={() => setShowWarning(false)} style={{
-              padding: '8px 15px',
-              borderRadius: '5px',
-              backgroundColor: '#000',
-              color: '#fff',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}>
+            <button
+              onClick={() => setShowWarning(false)}
+              style={{
+                padding: '8px 15px',
+                borderRadius: '5px',
+                backgroundColor: '#000',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
               Cancel
             </button>
           </div>

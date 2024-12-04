@@ -18,18 +18,26 @@ const LeaderboardPage = () => {
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`);
             if (res.data && Array.isArray(res.data)) {
-                setLeaderboardData(res.data);
+                // Sort by score and get top 100
+                const topUsers = res.data
+                    .sort((a: User, b: User) => b.score - a.score)
+                    .slice(0, 100);
+
+                setLeaderboardData(topUsers);
 
                 const userName = localStorage.getItem('username');
                 const currentUser = res.data.find((user: User) => user.userName === userName);
                 
                 if (currentUser) {
                     setCurrentUserScore(currentUser.score);
-                    setCurrentUserRank(res.data.indexOf(currentUser) + 1);
+                    const userRank = res.data
+                        .sort((a: User, b: User) => b.score - a.score)
+                        .findIndex((user: User) => user.userName === userName) + 1;
+                    setCurrentUserRank(userRank);
                 }
 
-                // Cache the data and store timestamp
-                localStorage.setItem('leaderboardData', JSON.stringify(res.data));
+                // Cache the filtered data
+                localStorage.setItem('leaderboardData', JSON.stringify(topUsers));
                 localStorage.setItem('leaderboardTimestamp', Date.now().toString());
             } else {
                 throw new Error("Invalid response format");
@@ -44,13 +52,11 @@ const LeaderboardPage = () => {
         const cachedData = localStorage.getItem('leaderboardData');
         const cachedTimestamp = localStorage.getItem('leaderboardTimestamp');
 
-        // Check if cached data is available and not expired
         if (cachedData && cachedTimestamp) {
             const currentTime = Date.now();
             const expirationTime = parseInt(cachedTimestamp, 10) + LEADERBOARD_EXPIRATION_TIME;
 
             if (currentTime < expirationTime) {
-                // Use cached data
                 const parsedData = JSON.parse(cachedData);
                 setLeaderboardData(parsedData);
 
@@ -65,7 +71,6 @@ const LeaderboardPage = () => {
             }
         }
 
-        // Fetch new data if no valid cache is found
         fetchLeaderboard();
     }, []);
 
