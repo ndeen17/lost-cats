@@ -5,6 +5,39 @@
   font-family: sans-serif;
 }
 
+.welcomePage {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+}
+.welcomePage input {
+  background-color: rgba(244, 244, 244, 0.137254902); /* Light gray background for a soft look */
+  border: 2px solid #ddd; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 12px 18px; /* Adequate padding for easy typing */
+  font-size: 16px; /* Readable font size */
+  width: 70%; /* Full width to make it responsive */
+  box-sizing: border-box; /* Include padding and border in width */
+  color: white;
+  font-weight: bold;
+}
+.welcomePage button {
+  background-color: #800000; /* Blue background for the button */
+  color: white; /* White text color */
+  border: none; /* No border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 12px 24px; /* Adequate padding for easy clicking */
+  font-size: 16px; /* Readable font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: all 0.3s ease; /* Smooth transition for hover and focus */
+  margin-top: 20px;
+  letter-spacing: 4px;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(236, 237, 238, 0.2); /* Subtle shadow for depth */
+}
+
 .dailyRewardsCont {
   width: 100%;
   display: flex;
