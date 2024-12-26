@@ -1,0 +1,354 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+.dailyRewardsCont {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: -moz-fit-content;
+  height: fit-content;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+  /* Fade-out effect */
+}
+.dailyRewardsCont .header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+.dailyRewardsCont .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.719);
+  transform: translate(-50%, -50%);
+  /* Optional: Add width and height to the wrapper */
+  width: 100%; /* Adjust to your needs */
+  height: inherit; /* Adjust to your needs */
+  transition: 1s ease-in-out;
+  opacity: 0;
+  flex-direction: column;
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Transition for fade-in/out and scale */
+}
+.dailyRewardsCont .wrapper button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 20px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 60%;
+  position: relative;
+  margin-bottom: 8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dailyRewardsCont .wrapper button:hover {
+  background-color: #2980b9;
+}
+@media (min-width: 768px) {
+  .dailyRewardsCont .wrapper button {
+    width: 50%;
+  }
+}
+.dailyRewardsCont .wrapper .tile {
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid white;
+  text-align: center;
+  height: 30em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  width: 27em;
+  margin-bottom: 0.5em;
+  margin-top: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.dailyRewardsCont .wrapper .tile h4 {
+  margin: 10px 0;
+  font-size: 40px;
+}
+.dailyRewardsCont .wrapper .tile span {
+  font-size: 180px;
+}
+.dailyRewardsCont .wrapper .tile .coin {
+  color: #f39c12;
+  font-weight: bold;
+  font-size: 100px;
+  text-shadow: 0 0 20px #f39c12, 0 0 40px #f39c12, 0 0 60px #f39c12;
+}
+.dailyRewardsCont .fadeIn {
+  display: flex; /* Make the wrapper flex */
+  opacity: 1; /* Fade in */
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth fade and scale transition */
+}
+.dailyRewardsCont .fadeOut {
+  display: none; /* Keep wrapper as flex */
+  opacity: 0; /* Fade out */
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth fade and scale transition */
+}
+.dailyRewardsCont .inner {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid white;
+  border-radius: 50px;
+  align-items: center;
+}
+.dailyRewardsCont .inner h3 {
+  font-size: 2.5em;
+}
+.dailyRewardsCont .inner p {
+  font-size: 19px;
+  margin: 20px;
+}
+.dailyRewardsCont .inner .rewards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5em, 1fr));
+  gap: 20px;
+  padding: 20px;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3em;
+  margin-bottom: 4em;
+}
+.dailyRewardsCont .inner .rewards .item {
+  background-color: rgba(245, 245, 245, 0.5058823529);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid white;
+  text-align: center;
+  height: 6em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.dailyRewardsCont .inner .rewards .item h4 {
+  margin: 10px 0;
+}
+.dailyRewardsCont .inner .rewards .item .coin {
+  color: #f39c12;
+  font-weight: bold;
+}
+.dailyRewardsCont .inner .rewards .day7 {
+  grid-column: span 2;
+}
+.dailyRewardsCont .inner .rewards .transparentBackground {
+  background: inherit;
+  border: 1px dashed white;
+}
+@media (max-width: 768px) {
+  .dailyRewardsCont .inner .rewards {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.dailyRewardsCont .center-rotate-scale {
+  /* Set up the container */
+  position: relative;
+  margin: 0 auto; /* Center the item horizontally */
+  /* Center the content vertically and horizontally */
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  /* Apply the animation */
+  animation: scaleRotate 2s linear; /* 2s duration, infinite loop */
+  /* To make sure the element doesn't overflow and stays within the bounds */
+  overflow: hidden;
+}
+@keyframes scaleRotate {
+  0% {
+    transform: scale(2) rotate(0deg);
+    background-color: rgba(245, 245, 245, 0.6156862745); /* Initial background color */
+  }
+  50% {
+    transform: scale(2.5) rotate(180deg);
+    background-color: rgba(245, 245, 245, 0.6156862745); /* Midway, scale up and rotate */
+  }
+  70% {
+    transform: scale(2.5) rotate(270deg); /* Maintain scaling at 70% */
+    background-color: rgba(245, 245, 245, 0.6156862745); /* No change to color */
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    background-color: rgba(245, 245, 245, 0.3568627451); /* End state with color change */
+  }
+}
+
+.notdustTaskList .clickerCont {
+  width: 22em;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.267);
+  border-radius: 20px;
+}
+.notdustTaskList .clickerCont .first {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.473);
+  border-radius: 30px;
+}
+.notdustTaskList .clickerCont .first .icon {
+  width: 2em;
+  height: 2em;
+  border: 1px solid black;
+  margin: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notdustTaskList .clickerCont .first .icon2 {
+  margin-left: 4em;
+}
+.notdustTaskList .clickerCont .first img {
+  border: 1px solid black;
+  margin: 10px;
+  width: 2em;
+  border-radius: 50%;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notdustTaskList .clickerCont .first .data {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.notdustTaskList .clickerCont .first .data p {
+  letter-spacing: 2px;
+}
+.notdustTaskList .clickerCont .first .data h4 {
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.notdustTaskList .clickerCont .second {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-radius: 30px;
+  margin-top: 3px;
+}
+.notdustTaskList .clickerCont .second .icon {
+  width: 2em;
+  height: 2em;
+  border: 1px solid black;
+  margin: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notdustTaskList .clickerCont .second .texts {
+  display: flex;
+  align-items: start;
+}
+.notdustTaskList .clickerCont .second .texts .others {
+  margin-top: 10px;
+}
+.notdustTaskList .clickerCont .second .texts .others span {
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.notdustTaskList .clickerCont .second button {
+  margin: 10px;
+  padding: 20px;
+  border: 1px solid white;
+  border-radius: 30px;
+}
+
+.cont {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+.cont .star-background {
+  width: 100%;
+  min-height: 100vh;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.cont .star-background .star-background-inner a {
+  color: #aaf0ff;
+  font-size: 3vw;
+  text-decoration: none;
+  padding: 20px;
+  letter-spacing: 3px;
+  border-radius: 10px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #333;
+  background: linear-gradient(30deg, rgba(0, 0, 0, 0.192) 50%, rgb(102, 23, 23) 100%);
+  position: fixed; /* You need to explicitly add position if it's fixed */
+  bottom: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+  font-size: 14px;
+}
+
+.tasksPage {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+}
+
+.invitePage {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+}
+
+.leaderBoards {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%), url("./assets/ppo.png");
+  background-size: 300%;
+  background-position: center;
+}/*# sourceMappingURL=styles.css.map */

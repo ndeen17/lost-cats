@@ -1,10 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import "../styles.css"
 
 
 const Daily = () => {
-    const [, setReward] = useState<number | null>(null);
+    const [reward, setReward] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
+  const [daysPassed, setDaysPassed] = useState<number>(0);
+
+     useEffect(() => {
+        const cookieName = "timestampCookie";
+        // Check if the cookie exists
+        let cookieValue = getCookie(cookieName);
+    
+        console.log(cookieValue)
+    
+        if (!cookieValue) {
+          // If no cookie, create a new cookie with the current timestamp
+          const currentTimestamp = Date.now(); // milliseconds
+          setCookie(cookieName, currentTimestamp.toString(), 7); // Expires in 7 days
+          setDaysPassed(1); // It's day 1 when the cookie is first set
+        } else {
+          // Cookie exists, calculate the difference in days
+          const storedTimestamp = parseInt(cookieValue.slice(1, cookieValue.length), 10);
+          // console.log(storedTimestamp)
+          if (isNaN(storedTimestamp)) {
+            console.error("Invalid timestamp in cookie.");
+            return;
+          }
+          const currentTimestamp = Date.now();
+          console.log(currentTimestamp)
+          // const currentTimestamp =1734966862568   //3 days timeline
+    
+          const diffInMilliseconds = currentTimestamp - storedTimestamp;
+          const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+          setDaysPassed(diffInDays + 1);
+    
+          console.log(diffInDays + 1)
+          // Update the cookie with the new day count
+          // setCookie(cookieName, storedTimestamp.toString(), 7); // The timestamp remains the same, only the day count changes
+        }
+      }, []);
 
 
     const claimReward = async () => {
@@ -103,3 +139,22 @@ const Daily = () => {
 };
 
 export default Daily;
+
+const setCookie = (name: string, value: string, days: number) => {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = `expires=${date.toUTCString()}`;
+  document.cookie = `${name}=${value};${expires};path=/`;
+};
+
+
+const getCookie = (name: string) => {
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1);
+    if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+  }
+  return "";
+};

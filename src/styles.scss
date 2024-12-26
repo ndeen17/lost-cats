@@ -1,0 +1,423 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.dailyRewardsCont{
+ width: 100%;
+ display: flex;
+//  align-items: center;
+ flex-direction: column;
+ overflow: auto;
+ height: fit-content;
+ width: 100%;
+  min-height:100vh;
+background: 
+  radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%),  // Gradient background
+  url('./assets/ppo.png');  // Background image
+  background-size:300%; // Ensures the image covers the container
+  background-position: center;
+
+ .header{
+    width: 100%;
+    // border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    font-size: 25px;
+    margin-bottom: 10px;
+ }
+ .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.719);
+  transform: translate(-50%, -50%);
+  /* Optional: Add width and height to the wrapper */
+  width: 100%;  /* Adjust to your needs */
+  height: inherit; /* Adjust to your needs */
+  transition: 1s ease-in-out;
+  opacity: 0;
+  flex-direction: column;
+ transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Transition for fade-in/out and scale */
+ button {
+  background-color: #3498db;                        // Blue background for the button
+  color: white;                                     // White text color
+  border: none;                                     // Remove default border
+  padding: 20px 20px;                               // Button padding
+  font-size: 16px;                                  // Button font size
+  border-radius: 5px;                               // Rounded corners
+  cursor: pointer;                                  // Cursor pointer on hover
+  margin-top: 20px;
+  width: 60%;                                        // Width of the button
+  position: relative;
+  margin-bottom: 8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #2980b9;                      // Darker blue on hover
+  }
+
+  @media (min-width: 768px) {
+    width: 50%;                                      // Button width on larger screens
+  }
+}
+  .tile {
+    // background-color: #f3f3f3ce;                    // Light background for each item
+    border-radius: 8px;                              // Round corners
+    padding: 20px;       
+     border: 1px solid white;                           // Padding inside each item
+    text-align: center;
+    height: 30em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;        
+    width: 27em;
+    margin-bottom: .5em;  
+    margin-top: 50px;                    // Center the text inside each item
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);       // Light shadow for depth
+
+    h4 {
+      margin: 10px 0; 
+      font-size: 40px;                               // Spacing between text elements
+    }
+    span{
+      font-size: 180px;
+    }
+
+    .coin {
+      color: #f39c12;                               // Gold color for the coin value
+      font-weight: bold;  
+      font-size: 100px;  
+      text-shadow: 0 0 20px #f39c12, 0 0 40px #f39c12, 0 0 60px #f39c12;                        // Make the coin value bold
+    }
+    
+  }
+}
+
+.fadeIn {
+  display: flex; /* Make the wrapper flex */
+  opacity: 1; /* Fade in */
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth fade and scale transition */
+}
+
+/* Fade-out effect */
+.fadeOut {
+  display:none; /* Keep wrapper as flex */
+  opacity: 0; /* Fade out */
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out; /* Smooth fade and scale transition */
+}
+ .inner{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 50px;
+    align-items: center;
+    h3{
+        font-size: 2.5em;
+    }
+    p{
+        font-size: 19px;
+        margin: 20px;
+    }
+    .rewards {
+        display: grid;                                    // Use grid layout
+        grid-template-columns: repeat(auto-fill, minmax(5em, 1fr));  // Auto-fill columns, each at least 5em wide
+        gap: 20px;                                         // Space between items
+        padding: 20px;
+        width: 50%;                                        // Set width of the grid
+        align-items: center;
+        justify-content: center;
+        margin-top: 3em;
+        margin-bottom: 4em;
+      
+        .item {
+          background-color: #f5f5f581;                    // Light background for each item
+          border-radius: 8px;                              // Round corners
+          padding: 20px;       
+           border: 1px solid white;                           // Padding inside each item
+          text-align: center;
+          height: 6em;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-size: 15px;                                 // Center the text inside each item
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);       // Light shadow for depth
+      
+          h4 {
+            margin: 10px 0;                                // Spacing between text elements
+          }
+      
+          .coin {
+            color: #f39c12;                               // Gold color for the coin value
+            font-weight: bold;                             // Make the coin value bold
+          }
+        }
+      
+        .day7 {
+          grid-column: span 2;                            // Make Day 7 span 2 columns
+        }
+
+        .transparentBackground{
+          background: inherit;
+          border: 1px dashed white;   
+        }
+      
+        @media (max-width: 768px) {
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+      
+}
+
+.center-rotate-scale {
+  /* Set up the container */
+  position: relative;
+  margin: 0 auto; /* Center the item horizontally */
+  
+  /* Center the content vertically and horizontally */
+  display: grid;
+  justify-content: center;
+  align-items: center;
+
+  /* Apply the animation */
+  animation: scaleRotate 2s linear; /* 2s duration, infinite loop */
+
+  /* To make sure the element doesn't overflow and stays within the bounds */
+  overflow: hidden;
+}
+
+@keyframes scaleRotate {
+  0% {
+    transform: scale(2) rotate(0deg);
+    background-color: #f5f5f59d;  /* Initial background color */
+  }
+  50% {
+    transform: scale(2.5) rotate(180deg); 
+    background-color: #f5f5f59d;  /* Midway, scale up and rotate */
+  }
+  70% {
+    transform: scale(2.5) rotate(270deg); /* Maintain scaling at 70% */
+    background-color: #f5f5f59d;  /* No change to color */
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    background-color: #f5f5f55b;  /* End state with color change */
+  }
+}
+
+}
+
+
+.notdustTaskList{
+    .clickerCont{
+        // border: 1px solid black;
+        width: 22em;
+        padding: 5px;
+        background: rgba(255, 255, 255, 0.267);
+        border-radius: 20px;
+        .first{
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.473);
+            border-radius: 30px;
+            .icon{
+                width: 2em;
+                height: 2em;
+                border: 1px solid black;
+                margin: 10px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .icon2{
+              margin-left: 4em;
+            }
+            img{
+              border: 1px solid black;
+              margin: 10px;
+              width: 2em;
+              border-radius: 50%;
+              height: 2em;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              }
+
+            .data{
+                display: flex;
+                flex-direction: column;
+                align-items: start;
+                p{
+                  // font-size:13px;
+                  letter-spacing: 2px;
+                }
+                h4{
+                  font-size:14px;
+                  letter-spacing: 1px;
+                }
+            }
+        }
+        .second{
+            display: flex;
+            //  background: rgba(255, 255, 255, 0.473);
+            flex-direction: column;
+            align-items: start;
+            border-radius: 30px;
+            margin-top: 3px;
+            .icon{
+              width: 2em;
+              height: 2em;
+                border: 1px solid black;
+                margin: 10px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .texts{
+                display: flex;
+                align-items: start;
+                .others{
+                  margin-top: 10px;
+                  span{
+                    font-size:11px;
+                    letter-spacing: 2px;
+                  }
+                }
+            }
+            button{
+                margin: 10px;
+                padding: 20px;
+                border: 1px solid white;
+                border-radius: 30px;
+            }
+        }
+    }
+}
+
+.cont{
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  // .wrapper{
+  //   width: 100%;
+  //   height: 100vh;
+  //   position: absolute;
+  //   top: 50%;
+  //   left: 50%;
+  //   transform: translate(-50%, -50%);
+  //   background-color:#0c0c0cd3;
+  // }
+  .star-background {
+    width: 100%;
+    min-height:100vh;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    // clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    background: 
+    radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%),  // Gradient background
+    url('./assets/ppo.png');  // Background image
+    background-size:300%; // Ensures the image covers the container
+    background-position: center;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .star-background-inner{
+      a {
+        color: #aaf0ff;  // Corrected color value, no quotes needed
+        font-size: 3vw;  // Avoid quotes around the unit
+        text-decoration: none;  // Remove underlining
+        // transition: background-color 0.3s ease, transform 0.3s ease;  // Smooth transition with transform
+        padding: 20px;
+        letter-spacing: 3px;
+        border-radius:10px;
+        // margin: 10px;
+        // background: radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%);
+        
+        // Added hover effect for interactivity
+        // &:hover {
+        //   background-color: rgba(255, 255, 255, 0.103);  // Subtle highlight on hover
+        //   transform: scale(1.1);  // Slight zoom effect on hover
+        // }
+      
+        // // Added focus state for accessibility (important for keyboard navigation)
+        // &:focus {
+        //   outline: 3px solid #aaf0ff;  // Clear focus outline for accessibility
+        //   outline-offset: 2px;
+        // }
+      
+        // Added a box shadow for extra visual depth
+        // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);  // Adds depth to the element
+      }
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #333;
+  background: linear-gradient(30deg, rgba(0, 0, 0, 0.192) 50%, rgb(102, 23, 23) 100%);
+  position: fixed;  /* You need to explicitly add position if it's fixed */
+  bottom: 0;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+  font-size: 14px;
+}
+
+
+.tasksPage {
+  width: 100%;
+  min-height:100vh;
+background: 
+  radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%),  // Gradient background
+  url('./assets/ppo.png');  // Background image
+  background-size:300%; // Ensures the image covers the container
+  background-position: center;
+
+}
+.invitePage{
+  width: 100%;
+  min-height:100vh;
+background: 
+  radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%),  // Gradient background
+  url('./assets/ppo.png');  // Background image
+  background-size:300%; // Ensures the image covers the container
+  background-position: center;
+
+}
+.leaderBoards{
+  width: 100%;
+  min-height:100vh;
+background: 
+  radial-gradient(circle, rgba(0, 0, 0, 0.7) 50%, #7d0000 100%),  // Gradient background
+  url('./assets/ppo.png');  // Background image
+  background-size:300%; // Ensures the image covers the container
+  background-position: center;
+
+}

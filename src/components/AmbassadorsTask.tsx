@@ -8,12 +8,12 @@ interface Task {
   url?: string;
 }
 
-interface TaskListProps {
+interface AmbassadorsTaskListProps {
   onTaskComplete: (taskId: string) => void;
   taskType: string;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
+const AmbassadorsTaskList: React.FC<AmbassadorsTaskListProps> = ({ onTaskComplete, taskType }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [showWarning, setShowWarning] = useState(false);
@@ -90,7 +90,7 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   return (
     <div style={{ marginTop: '20px' }}>
       <h2>Tasks</h2>
-      {tasks.length > 0 ? (
+      {tasks.length < 0 ? (
         tasks.map(task => (
           <div
             key={task._id}
@@ -201,4 +201,4 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   );
 };
 
-export default TaskList;
+export default AmbassadorsTaskList;
