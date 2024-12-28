@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../styles.css";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Interfaces
@@ -34,8 +35,10 @@ export default function Dailyyy() {
   const [currentTile, setCurrentTile] = useState<TileFormat | null>(null);
   const [tileDisplay, setTileDisplay] = useState(false);
   const [butDisplay, setButDisplay] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // const [userRewarded, setUserRewarded] = useState<string>("");
   const [daysPassed, setDaysPassed] = useState<number>(0);
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleTile = (tile: TileFormat) => {
     setCurrentTile(tile);
@@ -48,19 +51,64 @@ export default function Dailyyy() {
     }, 2500);
   };
 
-  // useEffect(()=>{
-  //   setUserRewarded(false)
-  // },[])
+  const fetchUserData = async () => {
+    const storedUsername = localStorage.getItem("username");
+    const storedCtsBalance = localStorage.getItem("ctsBalance");
 
-  // useEffect(() => {
-  //   // Set the tile data
-  //   handleTile(rewards[daysPassed]);
-  //   startTile();
-  // }, []);
+    // If both username and balance exist in local storage, use them
+    if (storedUsername && storedCtsBalance) {
+      // setUsername(storedUsername);
+      // setCtsBalance(parseFloat(storedCtsBalance));
+    } else if (storedUsername) {
+      // Otherwise, fetch from the backend
+      try {
+        const checkRes = await axios.get(
+          `${import.meta.env.VITE_API_URL}/users/check/${storedUsername}`
+        );
+
+        // Redirect if the user doesn't exist
+        if (!checkRes.data.exists) {
+          navigate("/"); // Redirect to the welcome page
+          return;
+        }
+
+        // Fetch user data
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/users/${storedUsername}`
+        );
+        // setUsername(res.data.userName);
+        // setCtsBalance(res.data.ctsBalance);
+
+        // Store the data in local storage for future use
+        localStorage.setItem("username", res.data.userName);
+        localStorage.setItem("ctsBalance", res.data.ctsBalance.toString());
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("Failed to load user data.");
+      }
+    } else {
+      alert("login again");
+      setError("No username found in local storage.");
+    }
+  };
+
+  useEffect(() => {
+    // Check local storage and fetch data only if necessary
+    fetchUserData();
+
+    // Set an interval to refetch user data every 60 seconds
+    const intervalId = setInterval(() => {
+      fetchUserData();
+    }, 60000);
+
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const COOKIE_NAME = "timestampCookie";
     const COOKIE_TODAY = "cookieToday";
+    const COOKIE_DAY = "cookieDay";
 
     // Helper functions
     const getStoredTimestamp = (cookieName: string): number | null => {
@@ -79,43 +127,56 @@ export default function Dailyyy() {
     // Main logic
     const storedTimestamp = getStoredTimestamp(COOKIE_NAME);
     const storedTimestampToday = getStoredTimestamp(COOKIE_TODAY);
+    const storedDay = getStoredTimestamp(COOKIE_DAY);
     const currentTimestamp = Date.now();
 
-    if (!storedTimestamp && !storedTimestampToday) {
-      // No cookies found, start new reward process
-      // setUserRewarded("false");
+    // Function to handle the initial reward setup and cookie setting
+    const handleInitialRewardSetup = () => {
       startTile();
       handleTile(rewards[0]);
 
       const newTimestamp = currentTimestamp.toString();
       setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
       setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
+      setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
       setDaysPassed(0); // It's the first day
-    } else if (storedTimestamp && !storedTimestampToday) {
-      // Cookie exists but no 'today' cookie
-      // setUserRewarded("false");
-      startTile();
+    };
 
-      const diffInMilliseconds = currentTimestamp - storedTimestamp;
-      const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
-
-      setDaysPassed(diffInDays + 1);
-      handleTile(rewards[diffInDays]);
-      console.log(diffInDays + 1);
-
-      console.log(rewards[diffInDays]);
-
-      // setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
-    } else if (storedTimestamp && storedTimestampToday) {
+    if (!storedTimestamp && !storedTimestampToday && !storedDay) {
+      // No cookies found, start new reward process
+      handleInitialRewardSetup();
+    } else if (storedTimestamp && storedTimestampToday && storedDay) {
       // Both cookies exist, calculate the difference for the reward
+      const storedDayValue = storedDay ? parseInt(storedDay.toString(), 10) : 0;
       const diffInMilliseconds = currentTimestamp - storedTimestamp;
       const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
 
-      setDaysPassed(diffInDays + 1);
-      handleTile(rewards[diffInDays]);
+      if (storedDayValue !== diffInDays + 1) {
+        // Day mismatch, start new reward process
+        handleInitialRewardSetup();
+      } else {
+        // Continue with the reward flow
+        setDaysPassed(diffInDays + 1);
+        handleTile(rewards[diffInDays]);
+        setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
+      }
+    } else if (storedTimestamp && !storedTimestampToday && storedDay) {
+      // Inconsistent state, need to check for correct day transition
+      setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
+      const storedDayValue = storedDay ? parseInt(storedDay.toString(), 10) : 0;
+      const diffInMilliseconds = currentTimestamp - storedTimestamp;
+      const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
 
-      // console.log(diffInDays + 1)
-      // console.log(rewards[diffInDays])
+      if (storedDayValue !== diffInDays + 1) {
+        // Day mismatch, start new reward process
+        handleInitialRewardSetup();
+      } else {
+        // Continue with the reward flow
+        startTile();
+        setDaysPassed(diffInDays + 1);
+        handleTile(rewards[diffInDays]);
+        setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
+      }
     } else {
       console.error("Invalid state. Cookie timestamps are inconsistent.");
     }
@@ -124,25 +185,49 @@ export default function Dailyyy() {
   const handleCompleteTask = async (ctsBalanceVal: CtsBalance) => {
     setButDisplay(false);
     setTileDisplay(false);
+
+    const COOKIE_NAME = "timestampCookie";
+    const COOKIE_TODAY = "cookieToday";
+    const COOKIE_DAY = "cookieDay";
+
+    // Helper function to get stored timestamp from cookies
+    const getStoredTimestamp = (cookieName: string): number | null => {
+      const cookieValue = getCookie(cookieName);
+      return cookieValue ? parseInt(cookieValue.slice(1), 10) : null;
+    };
+
+    // Helper function to set cookie with expiry
+    const setCookieWithExpiry = (
+      cookieName: string,
+      value: string,
+      days: number
+    ): void => {
+      setCookie(cookieName, value, days);
+    };
+
     try {
-      // Get the userName from localStorage
+      // Get stored timestamp and calculate the difference in days
+      const storedTimestamp = getStoredTimestamp(COOKIE_NAME);
+      if (!storedTimestamp) {
+        console.error("Timestamp cookie is missing.");
+        alert("Timestamp cookie is missing. Please try again.");
+        return;
+      }
+
+      const currentTimestamp = Date.now();
+      const diffInMilliseconds = currentTimestamp - storedTimestamp;
+      const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
+
+      // Get the username from localStorage
       const userName = localStorage.getItem("username");
       if (!userName) {
         alert("User not found. Please sign in again.");
         return;
       }
-      const COOKIE_TODAY = "cookieToday";
 
-      const setCookieWithExpiry = (
-        cookieName: string,
-        value: string,
-        days: number
-      ): void => {
-        setCookie(cookieName, value, days);
-      };
-
-      const currentTimestamp = Date.now();
-      setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
+      // Update cookies for today and the day count
+      setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1); // 1 day expiry
+      setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // 7 days expiry
 
       // Get the current balance from localStorage and calculate the new balance
       const currentBalance = parseInt(
@@ -154,13 +239,15 @@ export default function Dailyyy() {
       // Send the updated balance to the server
       const res = await axios.patch(
         `${import.meta.env.VITE_API_URL}/users/${userName}`,
-        { ctsBalance: newBalance, taskType: "DailyReward", day: daysPassed }
+        { ctsBalance: newBalance, taskType: "DailyReward", day: diffInDays + 1 }
       );
+
       console.log(res.data);
-      // Update the balance in localStorage
+
+      // Update the balance in localStorage and update UI state
       localStorage.setItem("ctsBalance", newBalance.toString());
       setTileDisplay(false);
-      // setUserRewarded("true"); // Mark the user as rewarded
+      // setUserRewarded("true"); // Optional: Mark the user as rewarded
     } catch (error) {
       console.error("Error completing task:", error);
       alert("Something went wrong. Please try again.");
@@ -246,6 +333,7 @@ export default function Dailyyy() {
             </div>
           ))}
         </div>
+        {error && <div style={{ color: "red", fontSize: "3vw" }}>{error}</div>}
         {/* } */}
       </div>
     </div>
