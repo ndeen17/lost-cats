@@ -162,7 +162,7 @@ export default function Dailyyy() {
       }
     } else if (storedTimestamp && !storedTimestampToday && storedDay) {
       // Inconsistent state, need to check for correct day transition
-      setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
+      // setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
       const storedDayValue = storedDay ? parseInt(storedDay.toString(), 10) : 0;
       const diffInMilliseconds = currentTimestamp - storedTimestamp;
       const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
@@ -224,11 +224,6 @@ export default function Dailyyy() {
         alert("User not found. Please sign in again.");
         return;
       }
-
-      // Update cookies for today and the day count
-      setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1); // 1 day expiry
-      setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // 7 days expiry
-
       // Get the current balance from localStorage and calculate the new balance
       const currentBalance = parseInt(
         localStorage.getItem("ctsBalance") || "0",
@@ -242,12 +237,19 @@ export default function Dailyyy() {
         { ctsBalance: newBalance, taskType: "DailyReward", day: diffInDays + 1 }
       );
 
-      console.log(res.data);
-
-      // Update the balance in localStorage and update UI state
-      localStorage.setItem("ctsBalance", newBalance.toString());
-      setTileDisplay(false);
-      // setUserRewarded("true"); // Optional: Mark the user as rewarded
+      if (res.data.status === true) {
+        console.log(res.data);
+        // Update cookies for today and the day count
+        setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1); // 1 day expiry
+        setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // 7 days expiry
+        // Update the balance in localStorage and update UI state
+        localStorage.setItem("ctsBalance", newBalance.toString());
+        setTileDisplay(false);
+        // setUserRewarded("true"); // Optional: Mark the user as rewarded
+      } else {
+        console.log(res.data);
+        setTileDisplay(false);
+      }
     } catch (error) {
       console.error("Error completing task:", error);
       alert("Something went wrong. Please try again.");
