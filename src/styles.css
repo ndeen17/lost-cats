@@ -344,6 +344,8 @@
   padding: 20px;
   letter-spacing: 3px;
   border-radius: 10px;
+  margin-bottom: 4em;
+  display: block;
 }
 
 .footer {

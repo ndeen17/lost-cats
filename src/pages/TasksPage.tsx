@@ -35,7 +35,7 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
   };
 
   return (
-    <div style={{ padding: "20px" }} className="tasksPage">
+    <div style={{ padding: "20px", overflowX: "hidden" }} className="tasksPage">
       <h2>Complete Tasks to Earn NDT</h2>
       <div
         style={{
