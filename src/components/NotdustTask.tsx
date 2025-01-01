@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles.css";
+import { toast, ToastContainer } from "react-toastify";
 
 // interface Task {
 //   _id: string;
@@ -14,12 +15,21 @@ interface NotdustTaskListProps {
   taskType: string;
 }
 
+const Loader = () => {
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+    </div>
+  );
+};
+
 const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ taskType }) => {
   // const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ onTaskComplete, taskType }) => {
   // const [tasks, setTasks] = useState<Task[]>([]);
   // const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   // const [showWarning, setShowWarning] = useState(false);
   // const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -75,7 +85,16 @@ const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ taskType }) => {
   // };
 
   const handleTaskClick = () => {
-    alert("hello world");
+    setLoading(false);
+    toast.success("Feature coming soon🤩😉. Stay tuned..", {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
   };
   // const handleTaskClick = (task: Task) => {
   //   if (completedTasks.some(t => t._id === task._id)) {
@@ -99,6 +118,14 @@ const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ taskType }) => {
 
   return (
     <div className="notdustTaskList" style={{ marginTop: "20px" }}>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          {/* Add any additional content you want to show when data is loaded */}
+        </div>
+      )}
+      <ToastContainer />
       <h2>Tasks</h2>
       <div className="clickerCont">
         <div className="first">
@@ -114,7 +141,7 @@ const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ taskType }) => {
             <div className="icon">🐱‍👤</div>
             <div className="others">
               <h5>Watch full ADS & CLICK</h5>
-              <span>To get free CTX</span>
+              <span>To get free $NDT</span>
             </div>
           </div>
           <button

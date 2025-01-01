@@ -211,7 +211,7 @@ const InvitePage: React.FC = () => {
 // Define styles as a constant object
 const styles = {
   container: {
-    padding: "20px",
+    padding: "10px",
     textAlign: "center" as "center", // Explicit type for textAlign
     minHeight: "100vh",
   } as React.CSSProperties,
