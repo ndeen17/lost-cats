@@ -44,10 +44,11 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
             params: { userName, taskType },
           }
         );
-
+        setLoading(false);
         setTasks(response.data.tasks);
         setCompletedTasks(response.data.completedTasks);
       } catch (error) {
+        setLoading(false);
         console.error("Error fetching tasks:", error);
       }
     };

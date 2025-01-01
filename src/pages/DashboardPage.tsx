@@ -115,9 +115,9 @@ const Dashboard = () => {
           >
             DAILY REWARD
           </a>
-          <a href="/tasks" className="tasks2">
+          {/* <a href="/tasks" className="tasks2">
             Earn With Tasks <span className="arrow">→</span>
-          </a>
+          </a> */}
         </div>
       </div>
     </div>

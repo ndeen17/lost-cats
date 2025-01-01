@@ -156,8 +156,8 @@ export default function Dailyyy() {
 
       const newTimestamp = currentTimestamp.toString();
       setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
-      setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
-      setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
+      // setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
+      // setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
       setDaysPassed(0); // It's the first day
     };
 
