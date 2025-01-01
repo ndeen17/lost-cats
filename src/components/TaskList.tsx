@@ -30,7 +30,7 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      setLoading(false);
+      setLoading(true);
       try {
         const userName = localStorage.getItem("username");
         if (!userName) {

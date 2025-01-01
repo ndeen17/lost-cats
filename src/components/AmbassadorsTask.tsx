@@ -33,7 +33,7 @@ const AmbassadorsTaskList: React.FC<AmbassadorsTaskListProps> = ({
 
   useEffect(() => {
     const fetchTasks = async () => {
-      setLoading(true);
+      setLoading(false);
       try {
         const userName = localStorage.getItem("username");
         if (!userName) {
