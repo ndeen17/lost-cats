@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Task {
   _id: string;
@@ -13,29 +13,42 @@ interface TaskListProps {
   taskType: string;
 }
 
+const Loader = () => {
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+    </div>
+  );
+};
+
 const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [showWarning, setShowWarning] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(false);
       try {
-        const userName = localStorage.getItem('username');
+        const userName = localStorage.getItem("username");
         if (!userName) {
           alert("User not found. Please sign in again.");
           return;
         }
 
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`, {
-          params: { userName, taskType }
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/tasks`,
+          {
+            params: { userName, taskType },
+          }
+        );
 
         setTasks(response.data.tasks);
         setCompletedTasks(response.data.completedTasks);
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error("Error fetching tasks:", error);
       }
     };
 
@@ -46,20 +59,26 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
     const { _id, reward } = task;
 
     try {
-      const userName = localStorage.getItem('username');
+      const userName = localStorage.getItem("username");
       if (!userName) {
         alert("User not found. Please sign in again.");
         return;
       }
 
-      await axios.post(`${import.meta.env.VITE_API_URL}/tasks/complete/${_id}`, { userName });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/tasks/complete/${_id}`,
+        { userName }
+      );
 
       setCompletedTasks([...completedTasks, task]);
-      setTasks(tasks.filter(t => t._id !== _id));
+      setTasks(tasks.filter((t) => t._id !== _id));
 
-      const currentBalance = parseInt(localStorage.getItem('ctsBalance') || '0', 10);
+      const currentBalance = parseInt(
+        localStorage.getItem("ctsBalance") || "0",
+        10
+      );
       const newBalance = currentBalance + reward;
-      localStorage.setItem('ctsBalance', newBalance.toString());
+      localStorage.setItem("ctsBalance", newBalance.toString());
 
       onTaskComplete(_id);
     } catch (error) {
@@ -68,7 +87,7 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   };
 
   const handleTaskClick = (task: Task) => {
-    if (completedTasks.some(t => t._id === task._id)) {
+    if (completedTasks.some((t) => t._id === task._id)) {
       alert("Task has already been completed.");
       return;
     }
@@ -77,7 +96,7 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
     setShowWarning(true);
 
     // Open the task URL in a new tab
-    window.open(task.url, '_blank');
+    window.open(task.url, "_blank");
 
     // Start a timer to complete the task after 30 seconds
     setTimeout(() => {
@@ -88,25 +107,34 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
   };
 
   return (
-    <div style={{ marginTop: '20px' }}>
+    <div style={{ marginTop: "20px" }}>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          {/* Add any additional content you want to show when data is loaded */}
+        </div>
+      )}
       <h2>Tasks</h2>
       {tasks.length > 0 ? (
-        tasks.map(task => (
+        tasks.map((task) => (
           <div
             key={task._id}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '15px 20px',
-              margin: '10px 0',
-              borderRadius: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              backgroundColor: '#fff',
-              transition: 'transform 0.2s',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "15px 20px",
+              margin: "10px 0",
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#fff",
+              transition: "transform 0.2s",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(1.02)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <a
               href={task.url}
@@ -114,12 +142,12 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
               rel="noopener noreferrer"
               style={{
                 flex: 1,
-                color: '#000',
-                textDecoration: 'none',
-                padding: '8px 15px',
-                borderRadius: '5px',
-                backgroundColor: '#f0f0f0',
-                marginRight: '10px',
+                color: "#000",
+                textDecoration: "none",
+                padding: "8px 15px",
+                borderRadius: "5px",
+                backgroundColor: "#f0f0f0",
+                marginRight: "10px",
               }}
               onClick={() => handleTaskClick(task)}
             >
@@ -133,19 +161,19 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
 
       <h2>Completed Tasks</h2>
       {completedTasks.length > 0 ? (
-        completedTasks.map(task => (
+        completedTasks.map((task) => (
           <div
             key={task._id}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '15px 20px',
-              margin: '10px 0',
-              borderRadius: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              color:"black",
-              backgroundColor: '#fff',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "15px 20px",
+              margin: "10px 0",
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              color: "black",
+              backgroundColor: "#fff",
             }}
           >
             <span style={{ flex: 1 }}>{task.task}</span>
@@ -159,37 +187,37 @@ const TaskList: React.FC<TaskListProps> = ({ onTaskComplete, taskType }) => {
       {showWarning && currentTask && (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             zIndex: 1000,
           }}
         >
           <div
             style={{
-              backgroundColor: '#fff',
-              padding: '20px',
-              borderRadius: '10px',
-              textAlign: 'center',
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "10px",
+              textAlign: "center",
             }}
           >
             <p>Make sure tasks are done properly!</p>
             <button
               onClick={() => setShowWarning(false)}
               style={{
-                padding: '8px 15px',
-                borderRadius: '5px',
-                backgroundColor: '#000',
-                color: '#fff',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '14px',
+                padding: "8px 15px",
+                borderRadius: "5px",
+                backgroundColor: "#000",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "14px",
               }}
             >
               Cancel

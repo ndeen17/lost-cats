@@ -35,7 +35,7 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
   };
 
   return (
-    <div style={{ padding: "20px", overflowX: "hidden" }} className="tasksPage">
+    <div style={{ padding: "15px", overflowX: "hidden" }} className="tasksPage">
       <h2>Complete Tasks to Earn NDT</h2>
       <div
         style={{
@@ -50,15 +50,23 @@ const TasksPage: React.FC<TasksPageProps> = ({ onTaskComplete }) => {
       >
         Hey! the more task you complete, the more $NDT you will earn.
       </div>
-      <div style={{ display: "flex", marginBottom: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          marginBottom: "20px",
+          // fontSize: "14px",
+          alignItems: "center",
+        }}
+      >
         {["Partnership tasks", "Notdust task", "Ambassadors tasks"].map(
           (tab) => (
             <div
               key={tab}
               onClick={() => setSelectedTab(tab)}
               style={{
-                padding: "10px 20px",
+                marginRight: "5px",
                 cursor: "pointer",
+                padding: "5px",
                 borderBottom: selectedTab === tab ? "2px solid #000" : "none",
                 fontWeight: selectedTab === tab ? "bold" : "normal",
               }}

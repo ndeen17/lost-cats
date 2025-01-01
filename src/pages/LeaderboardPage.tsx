@@ -6,21 +6,30 @@ interface User {
   userName: string;
   score: number;
 }
-
+const Loader = () => {
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+    </div>
+  );
+};
 const LEADERBOARD_EXPIRATION_TIME = 10 * 60 * 1000; // 10 minutes
 
 const LeaderboardPage = () => {
+  const [loading, setLoading] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState<User[]>([]);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [currentUserScore, setCurrentUserScore] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLeaderboard = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/leaderboard`
       );
       if (res.data && Array.isArray(res.data)) {
+        setLoading(false);
         // Sort by score and get top 100
         const topUsers = res.data
           .sort((a: User, b: User) => b.score - a.score)
@@ -46,9 +55,11 @@ const LeaderboardPage = () => {
         localStorage.setItem("leaderboardData", JSON.stringify(topUsers));
         localStorage.setItem("leaderboardTimestamp", Date.now().toString());
       } else {
+        setLoading(false);
         throw new Error("Invalid response format");
       }
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching leaderboard:", error);
       setError("Unable to load leaderboard. Please try again later.");
     }
@@ -86,12 +97,19 @@ const LeaderboardPage = () => {
   return (
     <div
       style={{
-        padding: "20px",
+        padding: "10px",
         // backgroundColor: "#f8f9fa",
         minHeight: "100vh",
       }}
       className="leaderBoards"
     >
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          {/* Add any additional content you want to show when data is loaded */}
+        </div>
+      )}
       <h2 style={{ textAlign: "center", color: "white" }}>Leaderboard</h2>
 
       {error ? (

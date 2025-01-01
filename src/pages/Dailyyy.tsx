@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../styles.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 // Interfaces
 interface TileFormat {
@@ -12,6 +13,14 @@ interface TileFormat {
 interface CtsBalance {
   reward: number;
 }
+
+const Loader = () => {
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+    </div>
+  );
+};
 
 const setCookie = (name: string, value: string, days: number) => {
   const date = new Date();
@@ -36,6 +45,7 @@ export default function Dailyyy() {
   const [tileDisplay, setTileDisplay] = useState(false);
   const [butDisplay, setButDisplay] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   // const [userRewarded, setUserRewarded] = useState<string>("");
   const [daysPassed, setDaysPassed] = useState<number>(0);
   const navigate = useNavigate(); // Initialize navigate
@@ -87,7 +97,16 @@ export default function Dailyyy() {
         setError("Failed to load user data.");
       }
     } else {
-      alert("login again");
+      // alert("login again");
+      toast.error("Login again", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
       setError("No username found in local storage.");
     }
   };
@@ -184,6 +203,7 @@ export default function Dailyyy() {
 
   const handleCompleteTask = async (ctsBalanceVal: CtsBalance) => {
     setButDisplay(false);
+    setLoading(true);
     setTileDisplay(false);
 
     const COOKIE_NAME = "timestampCookie";
@@ -210,7 +230,7 @@ export default function Dailyyy() {
       const storedTimestamp = getStoredTimestamp(COOKIE_NAME);
       if (!storedTimestamp) {
         console.error("Timestamp cookie is missing.");
-        alert("Timestamp cookie is missing. Please try again.");
+        // alert("Timestamp cookie is missing. Please try again.");
         return;
       }
 
@@ -221,7 +241,7 @@ export default function Dailyyy() {
       // Get the username from localStorage
       const userName = localStorage.getItem("username");
       if (!userName) {
-        alert("User not found. Please sign in again.");
+        // alert("User not found. Please sign in again.");
         return;
       }
       // Get the current balance from localStorage and calculate the new balance
@@ -238,6 +258,7 @@ export default function Dailyyy() {
       );
 
       if (res.data.status === true) {
+        setLoading(false);
         console.log(res.data);
         // Update cookies for today and the day count
         setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1); // 1 day expiry
@@ -245,14 +266,43 @@ export default function Dailyyy() {
         // Update the balance in localStorage and update UI state
         localStorage.setItem("ctsBalance", newBalance.toString());
         setTileDisplay(false);
+        toast.success("Claimed!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
         // setUserRewarded("true"); // Optional: Mark the user as rewarded
       } else {
+        setLoading(false);
         console.log(res.data);
         setTileDisplay(false);
+        toast.error("An error occured", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
       }
     } catch (error) {
+      setLoading(false);
+      toast.error("An error occured", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
       console.error("Error completing task:", error);
-      alert("Something went wrong. Please try again.");
+      // alert("Something went wrong. Please try again.");
     }
   };
 
@@ -278,6 +328,14 @@ export default function Dailyyy() {
 
   return (
     <div className="dailyRewardsCont">
+      <ToastContainer />
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          {/* Add any additional content you want to show when data is loaded */}
+        </div>
+      )}
       <div className="header">
         <h5>Daily Checking</h5>
         <span></span>
@@ -287,7 +345,11 @@ export default function Dailyyy() {
         <div className="tile">
           <h4>Day {currentTile?.day}</h4>
           <span>♦</span>
-          <h4 className="coin">{currentTile?.reward}</h4>
+          <h4 className="coin">
+            <b className="plus">+</b>
+            {currentTile?.reward}
+            <span className="NDT">$NDT</span>
+          </h4>
         </div>
         <button
           onClick={() => {
@@ -302,7 +364,7 @@ export default function Dailyyy() {
       <div className="inner">
         <span style={{ fontSize: "10vw", display: "block" }}>📅</span>
         <h3>Hey there</h3>
-        <p>Gain your diamonds with daily login streak</p>
+        <p>Gain free $NDT with daily login streak</p>
 
         {/* {userRewarded === "true" || ""?<div className="rewards">
           {rewards.map((item, index) => (
