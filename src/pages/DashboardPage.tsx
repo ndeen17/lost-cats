@@ -67,14 +67,14 @@ const Dashboard = () => {
     <div className="cont">
       <div className="wrapper"></div>
       <div className="star-background">
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px" }}>
           <img
             src={logo}
             alt="logo"
             style={{ minWidth: "100px", maxWidth: "200px", height: "auto" }}
           />
         </div>
-        <h1 style={{ fontSize: "6vw", margin: "20px 0", lineHeight: "1.2" }}>
+        <h1 style={{ fontSize: "6vw", lineHeight: "1.2" }}>
           Welcome, {username || "Guest"}!
         </h1>
         {ctsBalance !== null && (
@@ -99,7 +99,7 @@ const Dashboard = () => {
               borderRadius: "50px", // Fully rounded corners
               border: "2px solid #aaf0ff", // Light blue border
               width: "fit-content", // Adjust to content size
-              margin: "20px auto", // Center horizontally with margin
+              // margin: "20px auto", // Center horizontally with margin
               cursor: "pointer",
             }}
             onMouseOver={(e) => {

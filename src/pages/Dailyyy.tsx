@@ -257,7 +257,7 @@ export default function Dailyyy() {
         { ctsBalance: newBalance, taskType: "DailyReward", day: diffInDays + 1 }
       );
 
-      if (res.data.status === true) {
+      if (res.data) {
         setLoading(false);
         console.log(res.data);
         // Update cookies for today and the day count
