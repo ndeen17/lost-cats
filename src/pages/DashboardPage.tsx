@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/Non.png";
+import { ToastContainer, toast } from "react-toastify";
 import "../styles.css";
 
 const Dashboard = () => {
@@ -12,33 +13,35 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     const storedUsername = localStorage.getItem("username");
-    const storedCtsBalance = localStorage.getItem("ctsBalance");
-
-    // If both username and balance exist in local storage, use them
-    if (storedUsername && storedCtsBalance) {
-      setUsername(storedUsername);
-      setCtsBalance(parseFloat(storedCtsBalance));
-    } else if (storedUsername) {
-      // Otherwise, fetch from the backend
+    if (storedUsername) {
       try {
         const checkRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/users/check/${storedUsername}`
         );
 
-        // Redirect if the user doesn't exist
         if (!checkRes.data.exists) {
-          navigate("/"); // Redirect to the welcome page
+          localStorage.setItem("username", "");
+          localStorage.setItem("ctsBalance", "");
+          toast.error("User not found. Login again", {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 500); // Redirect to the welcome page
           return;
         }
 
-        // Fetch user data
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/users/${storedUsername}`
         );
         setUsername(res.data.userName);
         setCtsBalance(res.data.ctsBalance);
-
-        // Store the data in local storage for future use
         localStorage.setItem("username", res.data.userName);
         localStorage.setItem("ctsBalance", res.data.ctsBalance.toString());
       } catch (error) {
@@ -46,25 +49,42 @@ const Dashboard = () => {
         setError("Failed to load user data.");
       }
     } else {
+      toast.error("User not found. Login again", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
       setError("No username found in local storage.");
     }
   };
 
   useEffect(() => {
-    // Check local storage and fetch data only if necessary
     fetchUserData();
-
-    // Set an interval to refetch user data every 60 seconds
-    const intervalId = setInterval(() => {
-      fetchUserData();
-    }, 60000);
-
-    // Clear the interval on component unmount
-    return () => clearInterval(intervalId);
   }, []);
+
+  // useEffect(() => {
+  //   // Check local storage and fetch data only if necessary
+  //   fetchUserData();
+
+  //   // Set an interval to refetch user data every 60 seconds
+  //   const intervalId = setInterval(() => {
+  //     fetchUserData();
+  //   }, 60000);
+
+  //   // Clear the interval on component unmount
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   return (
     <div className="cont">
+      <ToastContainer />
       <div className="wrapper"></div>
       <div className="star-background">
         <div style={{ marginBottom: "10px" }}>

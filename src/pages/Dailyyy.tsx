@@ -99,8 +99,7 @@ export default function Dailyyy() {
         setError("Failed to load user data.");
       }
     } else {
-      // alert("login again");
-      toast.error("Login again", {
+      toast.error("User not found. Login again", {
         position: "top-right",
         autoClose: 1000,
         hideProgressBar: false,
@@ -109,6 +108,9 @@ export default function Dailyyy() {
         draggable: true,
         theme: "light",
       });
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
       setError("No username found in local storage.");
     }
   };
@@ -157,12 +159,10 @@ export default function Dailyyy() {
       startTile();
       handleTile(rewards[0]);
 
-      // const newTimestamp = currentTimestamp.toString();
-      // setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
-      // setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
-      // setDaysPassed(0); // It's the first day
-      setCookieWithExpiry(COOKIE_NAME, "", -1); // 7 days expiry
-      setCookieWithExpiry(COOKIE_DAY, "", -1); // 7 days expiry
+      const newTimestamp = currentTimestamp.toString();
+      setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
+      // setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
+      setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
       setDaysPassed(0); // It's the first day
     };
 

@@ -44,11 +44,63 @@ const WelcomePage = () => {
   //     }
   //   }, []);
 
+  // useEffect(() => {
+  //   const storedUsername = localStorage.getItem("username");
+  //   if (storedUsername) {
+  //     navigate("/dashboard"); // Redirect to dashboard if already signed in
+  //   }
+  // }, [navigate]);
+
+  const setCookie = (name: string, value: string, days: number) => {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value};${expires};path=/`;
+  };
+
+  const COOKIE_NAME = "timestampCookie";
+  const COOKIE_TODAY = "cookieToday";
+  const COOKIE_DAY = "cookieDay";
+
+  const setCookieWithExpiry = (
+    cookieName: string,
+    value: string,
+    days: number
+  ): void => {
+    setCookie(cookieName, value, days);
+  };
+
   useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-      navigate("/dashboard"); // Redirect to dashboard if already signed in
-    }
+    const fetchUserData = async () => {
+      const storedUsername = localStorage.getItem("username");
+      if (storedUsername) {
+        //  // Redirect to dashboard if already signed in
+        try {
+          const checkRes = await axios.get(
+            `${import.meta.env.VITE_API_URL}/users/check/${storedUsername}`
+          );
+
+          if (!checkRes.data.exists) {
+            localStorage.setItem("username", "");
+            localStorage.setItem("ctsBalance", "");
+            setCookieWithExpiry(COOKIE_NAME, "", -1); // 7 days expiry
+            setCookieWithExpiry(COOKIE_TODAY, "", -1); // 1 day expiry
+            setCookieWithExpiry(COOKIE_DAY, "1", -1); // 7 days expiry
+            // console.log(false);
+            navigate("/"); // Redirect to the welcome page if the user doesn't exist
+            return;
+          } else {
+            // console.log(true);
+            navigate("/dashboard");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setError("Failed to load user data.");
+        }
+      }
+    };
+
+    fetchUserData(); // Call the async function
   }, [navigate]);
 
   const handleSignIn = async () => {
@@ -64,7 +116,9 @@ const WelcomePage = () => {
       await axios.post(`${import.meta.env.VITE_API_URL}/users`, {
         userName: username,
       });
-
+      setCookieWithExpiry(COOKIE_NAME, "", -1); // 7 days expiry
+      setCookieWithExpiry(COOKIE_TODAY, "", -1); // 1 day expiry
+      setCookieWithExpiry(COOKIE_DAY, "", -1);
       localStorage.setItem("username", username);
       navigate("/dashboard");
     } catch (err) {

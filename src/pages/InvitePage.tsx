@@ -16,7 +16,6 @@ const InvitePage: React.FC = () => {
 
   const fetchUserData = async () => {
     const storedUsername = localStorage.getItem("username");
-
     if (storedUsername) {
       try {
         const checkRes = await axios.get(
@@ -24,7 +23,18 @@ const InvitePage: React.FC = () => {
         );
 
         if (!checkRes.data.exists) {
-          navigate("/"); // Redirect to the welcome page
+          toast.error("User not found. Login again", {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 500); // Redirect to the welcome page
           return;
         }
 
@@ -39,6 +49,18 @@ const InvitePage: React.FC = () => {
         setError("Failed to load user data.");
       }
     } else {
+      toast.error("User not found. Login again", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
       setError("No username found in local storage.");
     }
   };

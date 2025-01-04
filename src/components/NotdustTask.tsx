@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // interface Task {
 //   _id: string;
@@ -30,28 +31,103 @@ const NotdustTaskList: React.FC<NotdustTaskListProps> = ({ taskType }) => {
   // const [showWarning, setShowWarning] = useState(false);
   // const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  // const [userName, setUserName] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   const fetchTasks = async () => {
+  //     try {
+  //       const userName = localStorage.getItem("username");
+  //       if (!userName) {
+  //         alert("User not found. Please sign in again.");
+  //         return;
+  //       }
+
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_API_URL}/tasks`,
+  //         {
+  //           params: { userName, taskType },
+  //         }
+  //       );
+
+  //       console.log(response);
+
+  //       // setTasks(response.data.tasks);
+  //       // setCompletedTasks(response.data.completedTasks);
+  //     } catch (error) {
+  //       console.error("Error fetching tasks:", error);
+  //     }
+  //   };
+
+  //   fetchTasks();
+  // }, [taskType]);
 
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(false);
       try {
         const userName = localStorage.getItem("username");
-        if (!userName) {
-          alert("User not found. Please sign in again.");
-          return;
-        }
+        if (userName) {
+          try {
+            const checkRes = await axios.get(
+              `${import.meta.env.VITE_API_URL}/users/check/${userName}`
+            );
 
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/tasks`,
-          {
-            params: { userName, taskType },
+            if (!checkRes.data.exists) {
+              localStorage.setItem("username", "");
+              localStorage.setItem("ctsBalance", "");
+              toast.error("User not found. Login again", {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+              });
+              setTimeout(() => {
+                navigate("/");
+              }, 500); // Redirect to the welcome page
+              return;
+            }
+
+            const res = await axios.get(
+              `${import.meta.env.VITE_API_URL}/users/${userName}`
+            );
+            // setUserName(res.data.userName);
+            const response = await axios.get(
+              `${import.meta.env.VITE_API_URL}/tasks`,
+              {
+                params: { userName, taskType },
+              }
+            );
+            setLoading(false);
+            console.log(response);
+            // setTasks(response.data.tasks);
+            // setCompletedTasks(response.data.completedTasks);
+
+            localStorage.setItem("username", res.data.userName);
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            // setError("Failed to load user data.");
           }
-        );
-
-        console.log(response);
-
-        // setTasks(response.data.tasks);
-        // setCompletedTasks(response.data.completedTasks);
+        } else {
+          toast.error("User not found. Login again", {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 500);
+          // setError("No username found in local storage.");
+        }
       } catch (error) {
+        setLoading(false);
         console.error("Error fetching tasks:", error);
       }
     };
