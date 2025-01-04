@@ -164,6 +164,7 @@ export default function Dailyyy() {
       // setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
       setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
       setDaysPassed(0); // It's the first day
+      setCookieWithExpiry("daysPassed", "0", 7);
     };
 
     if (!storedTimestamp && !storedTimestampToday && !storedDay) {
@@ -183,6 +184,8 @@ export default function Dailyyy() {
       } else {
         // Continue with the reward flow
         setDaysPassed(diffInDays + 1);
+        setCookieWithExpiry("daysPassed", `${diffInDays + 1}`, 7);
+
         handleTile(rewards[diffInDays]);
         setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
       }
@@ -201,6 +204,8 @@ export default function Dailyyy() {
         // Continue with the reward flow
         startTile();
         setDaysPassed(diffInDays + 1);
+        setCookieWithExpiry("daysPassed", `${diffInDays + 1}`, 7);
+
         handleTile(rewards[diffInDays]);
         setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
       }
@@ -224,6 +229,8 @@ export default function Dailyyy() {
       const cookieValue = getCookie(cookieName);
       return cookieValue ? parseInt(cookieValue.slice(1), 10) : null;
     };
+
+    // console.log(getStoredTimestamp("daysPassed"));
 
     // Helper function to set cookie with expiry
     const setCookieWithExpiry = (
@@ -364,7 +371,18 @@ export default function Dailyyy() {
         </div>
         <button
           onClick={() => {
-            handleCompleteTask(rewards2[daysPassed - 1]);
+            const daysPassed = getStoredTimestamp("daysPassed");
+            const reward =
+              (daysPassed != null &&
+                Array.isArray(rewards2) &&
+                rewards2[daysPassed - 1]) ||
+              null;
+
+            if (reward !== null) {
+              handleCompleteTask(reward);
+            } else {
+              console.error("Invalid reward data or 'daysPassed' value");
+            }
           }}
           style={butDisplay ? { display: "flex" } : { display: "none" }}
         >
@@ -430,3 +448,9 @@ export default function Dailyyy() {
 // // console.log(getTomorrowTimestamp(1736081933006));
 // // console.log(getTomorrowTimestamp(1736168333006));
 // console.log(getTomorrowTimestamp(1736254733006));
+
+// Helper functions
+const getStoredTimestamp = (cookieName: string): number | null => {
+  const cookieValue = getCookie(cookieName);
+  return cookieValue ? parseInt(cookieValue.slice(1), 10) : null;
+};
