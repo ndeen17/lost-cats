@@ -48,7 +48,7 @@ export default function Dailyyy() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   // const [userRewarded, setUserRewarded] = useState<string>("");
-  const [daysPassed, setDaysPassed] = useState<number>(0);
+  // const [daysPassed, setDaysPassed] = useState<number>(0);
   const navigate = useNavigate(); // Initialize navigate
 
   //rotates
@@ -163,7 +163,7 @@ export default function Dailyyy() {
       setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
       // setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
       setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
-      setDaysPassed(0); // It's the first day
+      // setDaysPassed(0); // It's the first day
       setCookieWithExpiry("daysPassed", "0", 7);
     };
 
@@ -183,7 +183,7 @@ export default function Dailyyy() {
         setCookieWithExpiry(COOKIE_TODAY, "", -1);
       } else {
         // Continue with the reward flow
-        setDaysPassed(diffInDays + 1);
+        // setDaysPassed(diffInDays + 1);
         setCookieWithExpiry("daysPassed", `${diffInDays + 1}`, 7);
 
         handleTile(rewards[diffInDays]);
@@ -203,7 +203,7 @@ export default function Dailyyy() {
       } else {
         // Continue with the reward flow
         startTile();
-        setDaysPassed(diffInDays + 1);
+        // setDaysPassed(diffInDays + 1);
         setCookieWithExpiry("daysPassed", `${diffInDays + 1}`, 7);
 
         handleTile(rewards[diffInDays]);
