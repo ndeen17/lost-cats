@@ -64,16 +64,15 @@
 .dailyRewardsCont .wrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
   position: fixed;
-  top: 50%;
+  top: 42.6%;
   left: 50%;
   z-index: 3;
   background: rgba(0, 0, 0, 0.719);
   transform: translate(-50%, -50%);
   /* Optional: Add width and height to the wrapper */
   width: 100%; /* Adjust to your needs */
-  height: 100%; /* Adjust to your needs */
+  height: 27.5em; /* Adjust to your needs */
   transition: 1s ease-in-out;
   opacity: 0;
   flex-direction: column;
@@ -83,14 +82,14 @@
   background-color: #3498db;
   color: white;
   border: none;
-  padding: 20px 20px;
+  padding: 15px 15px;
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
   width: 60%;
   position: relative;
-  margin-bottom: 8em;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,7 +104,6 @@
 }
 .dailyRewardsCont .wrapper .tile {
   border-radius: 8px;
-  padding: 20px;
   border: 1px solid white;
   text-align: center;
   display: flex;
@@ -114,10 +112,8 @@
   justify-content: center;
   font-size: 15px;
   width: 90%;
-  margin-bottom: 0.5em;
-  margin-top: 50px;
-  padding-top: 4em;
-  padding-bottom: 4em;
+  margin-top: 10px;
+  height: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .dailyRewardsCont .wrapper .tile h4 {
