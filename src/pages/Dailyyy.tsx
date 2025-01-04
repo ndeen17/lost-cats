@@ -164,7 +164,7 @@ export default function Dailyyy() {
       // setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
       setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
       // setDaysPassed(0); // It's the first day
-      setCookieWithExpiry("daysPassed", "0", 7);
+      setCookieWithExpiry("daysPassed", "1", 7);
     };
 
     if (!storedTimestamp && !storedTimestampToday && !storedDay) {
