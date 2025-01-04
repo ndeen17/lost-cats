@@ -44,17 +44,19 @@ export default function Dailyyy() {
   const [currentTile, setCurrentTile] = useState<TileFormat | null>(null);
   const [tileDisplay, setTileDisplay] = useState(false);
   const [butDisplay, setButDisplay] = useState(true);
+  // const [rotate, setRotate] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   // const [userRewarded, setUserRewarded] = useState<string>("");
   const [daysPassed, setDaysPassed] = useState<number>(0);
   const navigate = useNavigate(); // Initialize navigate
 
+  //rotates
   const handleTile = (tile: TileFormat) => {
     setCurrentTile(tile);
   };
 
-  // Function to start the tile display with a delay
+  // shows tile
   const startTile = () => {
     setTimeout(() => {
       setTileDisplay(true);
@@ -151,13 +153,16 @@ export default function Dailyyy() {
 
     // Function to handle the initial reward setup and cookie setting
     const handleInitialRewardSetup = () => {
+      // setRotate(true);
       startTile();
       handleTile(rewards[0]);
 
-      const newTimestamp = currentTimestamp.toString();
-      setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
-      setCookieWithExpiry(COOKIE_TODAY, newTimestamp, 1); // 1 day expiry
-      setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
+      // const newTimestamp = currentTimestamp.toString();
+      // setCookieWithExpiry(COOKIE_NAME, newTimestamp, 7); // 7 days expiry
+      // setCookieWithExpiry(COOKIE_DAY, "1", 7); // 7 days expiry
+      // setDaysPassed(0); // It's the first day
+      setCookieWithExpiry(COOKIE_NAME, "", -1); // 7 days expiry
+      setCookieWithExpiry(COOKIE_DAY, "", -1); // 7 days expiry
       setDaysPassed(0); // It's the first day
     };
 
@@ -165,14 +170,16 @@ export default function Dailyyy() {
       // No cookies found, start new reward process
       handleInitialRewardSetup();
     } else if (storedTimestamp && storedTimestampToday && storedDay) {
+      // setRotate(false);
       // Both cookies exist, calculate the difference for the reward
       const storedDayValue = storedDay ? parseInt(storedDay.toString(), 10) : 0;
       const diffInMilliseconds = currentTimestamp - storedTimestamp;
       const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)); // Convert to days
-
+      console.log(diffInDays);
       if (storedDayValue !== diffInDays + 1) {
         // Day mismatch, start new reward process
         handleInitialRewardSetup();
+        setCookieWithExpiry(COOKIE_TODAY, "", -1);
       } else {
         // Continue with the reward flow
         setDaysPassed(diffInDays + 1);
@@ -180,6 +187,7 @@ export default function Dailyyy() {
         setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
       }
     } else if (storedTimestamp && !storedTimestampToday && storedDay) {
+      // setRotate(false);
       // Inconsistent state, need to check for correct day transition
       // setCookieWithExpiry(COOKIE_TODAY, currentTimestamp.toString(), 1);
       const storedDayValue = storedDay ? parseInt(storedDay.toString(), 10) : 0;
@@ -197,6 +205,7 @@ export default function Dailyyy() {
         setCookieWithExpiry(COOKIE_DAY, `${diffInDays + 1}`, 7); // Update the "day" cookie
       }
     } else {
+      // setRotate(false);
       console.error("Invalid state. Cookie timestamps are inconsistent.");
     }
   }, []);
@@ -279,6 +288,7 @@ export default function Dailyyy() {
       } else {
         setLoading(false);
         console.log(res.data);
+        setCookieWithExpiry(COOKIE_TODAY, "", -1);
         setTileDisplay(false);
         toast.error("An error occured", {
           position: "top-right",
@@ -292,6 +302,7 @@ export default function Dailyyy() {
       }
     } catch (error) {
       setLoading(false);
+      setCookieWithExpiry(COOKIE_TODAY, "", -1);
       toast.error("An error occured", {
         position: "top-right",
         autoClose: 1000,
@@ -403,3 +414,19 @@ export default function Dailyyy() {
     </div>
   );
 }
+
+// function getTomorrowTimestamp(timestamp: number): number {
+//   // Convert the given timestamp to a Date object
+//   const currentDate = new Date(timestamp);
+
+//   // Add one day to the current date
+//   currentDate.setDate(currentDate.getDate() + 1);
+
+//   // Return the timestamp for tomorrow's date
+//   return currentDate.getTime();
+// }
+
+// // console.log(getTomorrowTimestamp(1735995533006));
+// // console.log(getTomorrowTimestamp(1736081933006));
+// // console.log(getTomorrowTimestamp(1736168333006));
+// console.log(getTomorrowTimestamp(1736254733006));
