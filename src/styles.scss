@@ -77,6 +77,7 @@
     padding: 20px;
     font-size: 25px;
     margin-bottom: 10px;
+    
  }
  .wrapper {
   display: flex;
@@ -531,4 +532,56 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+
+
+
+
+$primary-color: #4caf50;
+$danger-color: #f44336;
+$reset-color: #2196f3;
+$button-radius: 4px;
+$fade-duration: 0.5s;
+
+.countdown-timer-container {
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(245, 241, 241, 0.1);
+  width: fit-content;
+  max-width: 90%;  // Added for responsiveness
+  margin: 10px auto;
+  z-index: 2; 
+  position:fixed;
+  top:1%;
+  right: 1%;
+  font-size: 20px;
+
+  .countdown-timer-display {
+    font-size: 25px;
+    // margin-bottom: 20px;
+    color: #464646;
+    font-weight: bold;
+    // transition: color 0.3s ease, opacity 0.5s ease;
+
+    &.fade {
+      // opacity: 0;
+      // animation: fadeIn $fade-duration forwards;
+    }
+  }
+}
+
+// Fade animation for timer update
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
