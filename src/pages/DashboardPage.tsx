@@ -47,6 +47,8 @@ const Dashboard = () => {
       } catch (error) {
         console.error("Error fetching user data:", error);
         setError("Failed to load user data.");
+        localStorage.setItem("username", "");
+        localStorage.setItem("ctsBalance", "");
       }
     } else {
       toast.error("User not found. Login again", {
@@ -58,6 +60,8 @@ const Dashboard = () => {
         draggable: true,
         theme: "light",
       });
+      localStorage.setItem("username", "");
+      localStorage.setItem("ctsBalance", "");
       setTimeout(() => {
         navigate("/");
       }, 500);
